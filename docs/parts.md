@@ -1,4 +1,4 @@
-# Dellista – 437 delar, 112 unika del/färg-kombinationer
+# Dellista – 443 delar, 111 unika del/färg-kombinationer
 
 | Antal | Del | Färg | Benämning | Finns i antal officiella set |
 |---:|---|---|---|---:|
@@ -51,10 +51,9 @@
 | 4 | 3034 | Gul | Plate 2 x 8 | 244 |
 | 1 | 3036 | Gul | Plate 6 x 8 | 16 |
 | 2 | 54200 | Gul | Slope 30° 1 x 1 x 2/3 (Cheese Slope) | 354 |
-| 12 | 11477 | Gul | Slope Curved 2 x 1 No Studs [1/2 Bow] | 187 |
-| 1 | 6636 | Gul | Tile 1 x 6 with Groove | 225 |
-| 3 | 4162 | Gul | Tile 1 x 8 with Groove | 154 |
-| 1 | 87079 | Gul | Tile 2 x 4 with Groove | 219 |
+| 18 | 11477 | Gul | Slope Curved 2 x 1 No Studs [1/2 Bow] | 187 |
+| 2 | 3070b | Gul | Tile 1 x 1 with Groove | 377 |
+| 3 | 87079 | Gul | Tile 2 x 4 with Groove | 219 |
 | 2 | 55981 | Gul | Wheel 18 x 14 with Pin Hole, Fake Bolts and Shallow Spokes | 46 |
 | 2 | 56145 | Gul | Wheel 30.4 x 20 without Pinholes, with Reinforced Rim | 14 |
 | 8 | 32073 | Ljus blågrå | Technic Axle 5 | 850 |

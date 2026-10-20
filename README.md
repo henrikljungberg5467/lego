@@ -7,7 +7,7 @@ En byggbar LEGO-modell av nollsvängsklipparen John Deere Z315E med 42-tums klip
 | | |
 |---|---|
 | Skala | 1:8 (bakdäck 56 mm = 18" i verkligheten, framhjul 30 mm) |
-| Antal delar | 437 (112 olika del/färg-kombinationer) |
+| Antal delar | 443 (111 olika del/färg-kombinationer) |
 | Mått | ca 23 × 18 × 14 cm (L × B × H) |
 | Färger | grön, gul, svart, mörk och ljus blågrå, en orange detalj |
 | Filformat | LDraw MPD – öppnas i BrickLink Studio, LeoCAD eller LDCad |
@@ -36,12 +36,12 @@ Den enda ovanligare delen är den gröna Technic-balken 1 × 15 (32278). Den har
 Modellen är inte provbyggd fysiskt än, men den har kontrollerats digitalt med verktygen i `tools/`:
 
 - **Delar och färger:** varje del/färg-kombination har slagits upp i Rebrickables lagerdata. Alla förekommer i officiella LEGO-set, och de automatiskt utlagda plattorna och klossarna använder bara kombinationer som funnits i minst tre set.
-- **Anslutningar:** alla stift, axlar, hål och knoppar matchas mot anslutningsdata från LDCad Shadow Library. Alla 437 delar hänger ihop i en enda struktur, och inga stift sitter i fel sorts hål.
+- **Anslutningar:** alla stift, axlar, hål och knoppar matchas mot anslutningsdata från LDCad Shadow Library. Alla 443 delar hänger ihop i en enda struktur, och inga stift sitter i fel sorts hål.
 - **Kollisioner:** varje del voxeliseras med 1 LDU (0,4 mm) upplösning. Inga delar går in i varandra.
 
 Saker som är förenklade jämfört med originalet:
 
-- Dekalerna ("JOHN DEERE", "Z315E" och hjortlogotyperna) ingår inte. Den gröna runda brickan på sätet och den svarta brickan på fotstödet sitter där logotyperna ska vara, och egna klistermärken kan sättas på dem.
+- Dekalerna ingår inte som LEGO-delar. [`stickers/z315e_stickers.svg`](stickers/z315e_stickers.svg) är ett ark i skala 1:1 med "JOHN DEERE", "Z315E" och varningsetiketter, som kan skrivas ut på klisteretikettpapper. Hjortlogotyperna är inte med; den gröna runda brickan på sätet sitter där logotypen ska vara.
 - Den gula randen på sidopanelen är rak. På originalet lutar den.
 - Klippaggregatet sitter på fast höjd. Lyftpedalen är bara en detalj.
 
@@ -51,6 +51,7 @@ Saker som är förenklade jämfört med originalet:
 model/z315e.py        generator: hela modellen beskriven i Python (koordinater i LDU)
 model/z315e.mpd       den genererade LDraw-modellen
 docs/                 dellistor (BrickLink, Rebrickable, Markdown)
+stickers/             dekalark att skriva ut
 renders/              renderingar
 viewer/               3D-visare med byggsteg (three.js + LDrawLoader)
 tools/check.py        kontroll av anslutningar, kollisioner och färger
@@ -78,5 +79,7 @@ python3 tools/build_viewer.py
 |---|---|
 | ![Framifrån vänster](renders/z315e-front-left.png) | ![Bakifrån](renders/z315e-rear.png) |
 | ![Från sidan](renders/z315e-side.png) | ![Ovanifrån](renders/z315e-top.png) |
+
+LDraw-delarna i `viewer/z315e_packed.mpd` kommer från LDraw.org-biblioteket (CC BY 4.0).
 
 John Deere och ZTrak är varumärken som tillhör Deere & Company. LEGO är ett varumärke som tillhör LEGO Group. Det här är ett fristående hobbyprojekt.

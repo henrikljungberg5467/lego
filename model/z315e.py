@@ -338,7 +338,11 @@ def seat():
     s.step()
     # cushion
     fill(s, "brick", YELLOW, -80, 80, -40, 40, -208)
-    fill(s, "tile", YELLOW, -80, 80, -40, 40, -216, avoid=[(-70, 30), (70, 30)])
+    side = [(x, z) for x in (-70, -50, 50, 70) for z in (-30, -10, 10)]
+    fill(s, "tile", YELLOW, -80, 80, -40, 40, -216, avoid=[(-70, 30), (70, 30)] + side)
+    for z in (-30, -10, 10):
+        s.add("11477", YELLOW, (60, -208, z), rot(z="+X", y="+Y"), "cushion side bolster")
+        s.add("11477", YELLOW, (-60, -208, z), rot(z="-X", y="+Y"), "cushion side bolster")
     fill(s, "plate", YELLOW, -80, 80, -80, -40, -192)
     fill(s, "plate", YELLOW, -80, 80, -80, -40, -200)
     for x in range(-70, 71, 20):
