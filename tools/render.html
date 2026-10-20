@@ -1,0 +1,61 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>html,body{margin:0;background:#fff}</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head><body>
+<script type="module">
+import * as THREE from 'three';
+import { LDrawLoader } from 'three/addons/loaders/LDrawLoader.js';
+import { LDrawUtils } from 'three/addons/utils/LDrawUtils.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const params = new URLSearchParams(location.search);
+const W = +(params.get('w') || 1200), H = +(params.get('h') || 900);
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(W, H); renderer.setPixelRatio(1);
+renderer.toneMapping = THREE.NoToneMapping;
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0xffffff);
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.9;
+const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(-1, 2, 1.5); scene.add(sun);
+
+const camera = new THREE.PerspectiveCamera(30, W / H, 1, 100000);
+let model, box, center, radius;
+
+window.loadModel = async (url) => {
+  const loader = new LDrawLoader();
+  loader.setPartsLibraryPath('/ldraw/');
+  await loader.preloadMaterials('/ldraw/LDConfig.ldr');
+  const t0 = performance.now();
+  model = await loader.loadAsync(url);
+  model = LDrawUtils.mergeObject ? model : model;
+  model.rotation.x = Math.PI;
+  scene.add(model);
+  model.updateMatrixWorld(true);
+  box = new THREE.Box3().setFromObject(model);
+  center = box.getCenter(new THREE.Vector3());
+  radius = box.getSize(new THREE.Vector3()).length() / 2;
+  return { ms: performance.now() - t0, steps: model.userData.numBuildingSteps, size: box.getSize(new THREE.Vector3()).toArray(), min: box.min.toArray(), max: box.max.toArray() };
+};
+
+// az: degrees around vertical, 0 = looking from model front (-Z LDraw), el: degrees above horizon
+window.renderView = (az, el, opts = {}) => {
+  const fov = opts.fov || 30; camera.fov = fov; camera.updateProjectionMatrix();
+  const step = opts.step;
+  if (step !== undefined) model.traverse(c => { if (c.isGroup) c.visible = c.userData.buildingStep <= step; });
+  else model.traverse(c => { if (c.isGroup) c.visible = true; });
+  const tgt = opts.target ? new THREE.Vector3(...opts.target) : center.clone();
+  const r = opts.radius || radius;
+  const dist = (opts.zoom || 1) * r / Math.sin(THREE.MathUtils.degToRad(fov / 2)) * 1.0;
+  const a = THREE.MathUtils.degToRad(az), e = THREE.MathUtils.degToRad(el);
+  camera.position.set(tgt.x + dist * Math.cos(e) * Math.sin(a), tgt.y + dist * Math.sin(e), tgt.z + dist * Math.cos(e) * Math.cos(a));
+  camera.up.set(0, 1, 0); camera.lookAt(tgt);
+  if (opts.ortho) {
+    const oc = new THREE.OrthographicCamera(-r * W / H, r * W / H, r, -r, 1, 100000);
+    oc.position.copy(camera.position); oc.lookAt(tgt); oc.zoom = 1 / (opts.zoom || 1); oc.updateProjectionMatrix();
+    renderer.render(scene, oc);
+  } else renderer.render(scene, camera);
+  return renderer.domElement.toDataURL('image/png');
+};
+window.ready = true;
+</script></body></html>

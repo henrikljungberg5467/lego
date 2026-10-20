@@ -1,0 +1,5 @@
+node_modules/
+ldraw
+__pycache__/
+*.pyc
+/tmp/
