@@ -24,7 +24,7 @@ let model, box, center, radius;
 
 window.loadModel = async (url) => {
   const loader = new LDrawLoader();
-  loader.setPartsLibraryPath('/ldraw/');
+  loader.setPartsLibraryPath(params.get('lib') || '/ldraw/');
   await loader.preloadMaterials('/ldraw/LDConfig.ldr');
   const t0 = performance.now();
   model = await loader.loadAsync(url);

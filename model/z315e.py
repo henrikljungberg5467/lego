@@ -4,9 +4,10 @@
 Generates model/z315e.mpd. Coordinates in LDU (1 stud = 20, plate = 8, -Y is up).
 Machine axes: front = -Z, left = +X, right (discharge side) = -X. Rear axle at z=0.
 
-Grids: the rear frame, body and deck use studs at x,z = 10 (mod 20) ("grid A"); the
-front frame is Technic (holes at multiples of 20) and the operator floor sits on studs
-at multiples of 20 ("grid B"), reached from grid A through 2x2 jumper plates.
+Grids: the rear frame and body use studs at x,z = 10 (mod 20) ("grid A"). The front
+frame side members have their holes at x = 0 (mod 20), z = 10 (mod 20); the operator
+floor uses that grid ("grid B") and is locked to grid A with 1x2 jumper plates
+(half-stud shift in x only). The deck hangs on rods and has its own grid.
 """
 import os
 import sys
@@ -19,10 +20,10 @@ OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "z315e.mpd")
 # ------------------------------------------------------------------ key dimensions
 REAR_AXLE_Y = -70          # 56145 rim + 55976 tyre, radius 71
 REAR_WHEEL_X = 140
-CROSSBAR_Z = -420          # front cross tube / caster pivots
+CROSSBAR_Z = -430          # front cross tube / caster pivots
 CROSSBAR_Y = -130
 PIVOT_X = 140
-HANGER_Z = (-220, -160)    # deck hanger rods (x = +-140)
+HANGER_Z = (-230, -170)    # deck hanger rods (x = +-140)
 BODY_Z1 = 120              # rear end of the body
 
 # common orientations
@@ -60,13 +61,15 @@ def rear_frame():
     box(s, "plate", BLACK, -100, 100, -40, 0, -96)
     box(s, "plate", BLACK, -100, 100, 0, BODY_Z1, -96)
     for x in (-1, 1):
-        box(s, "plate", BLACK, *sorted((x * 100, x * 140)), -140, -80, -96)
-        box(s, "plate", BLACK, *sorted((x * 140, x * 160)), -140, -80, -96)
+        box(s, "plate", BLACK, *sorted((x * 100, x * 140)), -160, -80, -96)
+        box(s, "plate", BLACK, *sorted((x * 140, x * 160)), -160, -80, -96)
     s.step()
-    # adapter to the floor grid: 2x16 plate + jumpers (half-stud offset in x and z)
-    box(s, "plate", BLACK, -160, 160, -140, -100, -104)
-    for x in (-140, -100, -60, -20, 20, 60, 100, 140):
-        s.add("87580", BLACK, (x, -112, -120), I)
+    # adapter to the floor grid: plates + 1x2 jumpers (half-stud shift in x)
+    box(s, "plate", BLACK, -160, 0, -160, -80, -104)
+    box(s, "plate", BLACK, 0, 160, -160, -80, -104)
+    for z in (-150, -130, -110, -90):
+        for x in (-140, -100, -60, -20, 20, 60, 100, 140):
+            s.add("15573", BLACK, (x, -112, z), I)
     return s
 
 
@@ -95,16 +98,16 @@ def front_frame():
     s = m.sub("front_frame", "Front frame with cross tube")
     s.add(BEAM[15], GREEN, (0, CROSSBAR_Y, CROSSBAR_Z), R_BEAM_X, "front cross tube")
     for x in (-1, 1):
-        s.add(BEAM[15], GREEN, (x * PIVOT_X, CROSSBAR_Y, -240), I, "side member")
+        s.add(BEAM[15], GREEN, (x * PIVOT_X, CROSSBAR_Y, CROSSBAR_Z + 160), I, "side member")
     s.step()
     for x in (-1, 1):
         px = x * PIVOT_X
         Rl = rot(x="-X", z="-Z") if x > 0 else rot(x="+X", z="-Z")
         for dx in (20, 40):
             s.add("2780", BLACK, (px - x * dx, -140, CROSSBAR_Z), R_PIN_Y)
-        for z in (-380, -360, -340):
-            s.add("2780", BLACK, (px, -140, z), R_PIN_Y)
-        s.add("32526", GREEN, (px, -150, -340), Rl, "corner")
+        for dz in (20, 40, 60):
+            s.add("2780", BLACK, (px, -140, CROSSBAR_Z + dz), R_PIN_Y)
+        s.add("32526", GREEN, (px, -150, CROSSBAR_Z + 80), Rl, "corner")
     return s
 
 
@@ -143,36 +146,47 @@ def floor():
     s = m.sub("floor", "Operator floor pan and footrest")
     holes = [(x, z) for x in (-140, 140) for z in HANGER_Z]
     # floor plates: studs at multiples of 20; outer columns plug into the side members
-    fill(s, "plate", GREEN, -150, 150, -330, -90, -120, avoid=holes, prefer="z")
+    fill(s, "plate", GREEN, -150, 150, -340, -80, -120, avoid=holes, prefer="z")
     s.step()
     # forward extension under the footrest, one plate lower so it locks under the floor;
     # kept within x=+-70 so the swivelling caster forks clear it
-    fill(s, "plate", GREEN, -70, 70, -410, -290, -112, prefer="z")
+    fill(s, "plate", GREEN, -70, 70, -420, -300, -112, prefer="z")
     s.step()
-    fill(s, "tile", GREEN, -130, 130, -330, -90, -128, prefer="z",
-         avoid=[(x, -320) for x in range(-100, 101, 20)])
+    fill(s, "tile", GREEN, -130, 130, -340, -80, -128, prefer="x",
+         avoid=[(x, -330) for x in range(-100, 101, 20)] + [(-80, -90), (-60, -90)])
+    for x in (-140, 140):
+        box(s, "tile", GREEN, x - 10, x + 10, -120, -80, -128)
     s.step()
     # footrest: base plate under the front, a wide raised toe board rising to the front.
     # Everything at y > -120 stays within x=+-70 so the swivelling caster forks clear it.
-    fill(s, "plate", GREEN, -70, 70, -410, -330, -120)
-    fill(s, "plate", GREEN, -110, 110, -410, -310, -128, prefer="x")
+    fill(s, "plate", GREEN, -70, 70, -420, -340, -120)
+    fill(s, "plate", GREEN, -110, 110, -420, -320, -128, prefer="x")
     s.step()
     R_back = rot(x="-X", z="-Z")
-    fill(s, "brick", GREEN, -110, 110, -410, -390, -152)
+    fill(s, "brick", GREEN, -110, 110, -420, -400, -152)
     for x0, x1 in ((-110, -70), (-70, -30), (-30, -10), (-10, 10), (10, 30), (30, 70), (70, 110)):
-        s.add("3298" if x1 - x0 == 40 else "4286", GREEN, ((x0 + x1) / 2, -152, -380), R_back, "toe board")
+        s.add("3298" if x1 - x0 == 40 else "4286", GREEN, ((x0 + x1) / 2, -152, -390), R_back, "toe board")
     s.step()
-    fill(s, "brick", GREEN, -110, 110, -410, -390, -176)
+    fill(s, "brick", GREEN, -110, 110, -420, -400, -176)
     for x in range(-100, 101, 20):
-        s.add("3040b", GREEN, (x, -176, -380), R_back)
-    fill(s, "tile", GREEN, -110, 110, -410, -370, -184, avoid=[(-20, -400), (0, -400), (20, -400)])
-    box(s, "tile", BLACK, -30, 30, -410, -390, -184, "John Deere badge")
+        s.add("3040b", GREEN, (x, -176, -390), R_back)
+    fill(s, "tile", GREEN, -110, 110, -420, -380, -184, avoid=[(-20, -410), (0, -410), (20, -410)])
+    box(s, "tile", BLACK, -30, 30, -420, -400, -184, "John Deere badge")
+    s.step()
+    # deck lift pedal in front of the seat (right side)
+    box(s, "plate", BLACK, -90, -50, -100, -80, -128)
+    s.add("32064a", BLACK, (-70, -152, -90), I, "pedal pivot")
+    s.add(AXLE[2], BLACK, (-70, -142, -100), rot(x="+Z", y="+Y"))
+    s.add("32140", BLACK, (-70, -142, -110), rot(y="+Z", z="-Y"), "deck lift pedal arm")
+    for x in (-70, -50):
+        s.add("2780", BLACK, (x, -202, -120), rot(x="+Z", y="+Y"))
+    s.add("60484", BLACK, (-70, -242, -130), rot(y="+Z", z="+Y"), "pedal pad")
     return s
 
 
 # ================================================================== mower deck (grid A)
 DECK_X = 180
-DECK_Z0, DECK_Z1 = -320, -120
+DECK_Z0, DECK_Z1 = -330, -130
 
 
 R_CORNER_R = rot(x="-Z", z="+X")         # round-corner parts for the right (-X) front corner
@@ -185,13 +199,13 @@ def deck():
     # hanger plates (Technic plates with holes, hidden under the top tiles)
     for x in (-1, 1):
         x0, x1 = sorted((x * 120, x * 160))
-        s.add("32001", BLACK, ((x0 + x1) / 2, -72, -180), R_ALONG_Z, "hanger plate")
-        used += [(xx, zz) for xx in (x0 + 10, x0 + 30) for zz in range(-230, -129, 20)]
+        s.add("32001", BLACK, ((x0 + x1) / 2, -72, -190), R_ALONG_Z, "hanger plate")
+        used += [(xx, zz) for xx in (x0 + 10, x0 + 30) for zz in range(-240, -139, 20)]
     # rounded front corners
     corner_missing = []
     for x in (-1, 1):
         R = I if x > 0 else R_CORNER_R
-        c = np.array([x * 140, 0, -280])
+        c = np.array([x * 140, 0, -290])
         s.add("30565", GREEN, (c[0], -72, c[2]), R, "deck corner")
         for lx, lz in [(-30, -30), (-10, -30), (10, -30), (30, -30), (-30, -10), (-10, -10), (10, -10), (30, -10),
                        (-30, 10), (-10, 10), (10, 10), (30, 10), (-30, 30), (-10, 30), (10, 30), (30, 30)]:
@@ -207,27 +221,28 @@ def deck():
     for x in (-1, 1):
         R = I if x > 0 else R_CORNER_R
         for y in (-64, -40):
-            s.add("48092", GREEN, (x * 100, y, -240), R, "deck corner skirt")
+            s.add("48092", GREEN, (x * 100, y, -250), R, "deck corner skirt")
     for kind, y in (("brick", -64), ("brick", -40)):
         fill(s, kind, GREEN, -100, 100, DECK_Z0, DECK_Z0 + 20, y, sizes=sk)
         fill(s, kind, GREEN, -DECK_X, DECK_X, DECK_Z1 - 20, DECK_Z1, y, sizes=sk)
-        fill(s, kind, GREEN, DECK_X - 20, DECK_X, -240, DECK_Z1 - 20, y, sizes=sk, prefer="z")
-        fill(s, kind, GREEN, -DECK_X, -DECK_X + 20, -160, DECK_Z1 - 20, y, sizes=sk, prefer="z")
+        fill(s, kind, GREEN, DECK_X - 20, DECK_X, -250, DECK_Z1 - 20, y, sizes=sk, prefer="z")
+        fill(s, kind, GREEN, -DECK_X, -DECK_X + 20, -170, DECK_Z1 - 20, y, sizes=sk, prefer="z")
         s.step()
     # discharge chute on the right side
-    box(s, "plate", BLACK, -240, -160, -240, -160, -64, "discharge chute")
-    for z in (-220, -180):
+    box(s, "plate", BLACK, -240, -160, -250, -170, -64, "discharge chute")
+    for z in (-230, -190):
         s.add("3298", BLACK, (-190, -88, z), rot(z="+X", y="+Y"))
-    for z0 in (-240, -180):
-        box(s, "brick", BLACK, -240, -180, z0, z0 + 20, -56)
-    box(s, "brick", BLACK, -240, -220, -220, -180, -56)
+    for y in (-56, -48):
+        for z0 in (-250, -190):
+            box(s, "plate", BLACK, -240, -180, z0, z0 + 20, y)
+        box(s, "plate", BLACK, -240, -220, -230, -190, y)
     s.step()
     # top tiles, leaving studs free around the hanger rods and for the belt cover
     free = list(corner_missing)
     for x in (-140, 140):
         for z in HANGER_Z:
             free += [(x + dx, z + dz) for dx in (-10, 10) for dz in (-10, 10)]
-    dome = (-90, -250)
+    dome = (-90, -260)
     free.append(dome)
     free += edge + [(x, DECK_Z0 + 30) for x in range(-90, 91, 20)]
     fill(s, "tile", GREEN, -DECK_X, DECK_X, DECK_Z0, DECK_Z1, -80, avoid=free, prefer="z")
@@ -383,7 +398,7 @@ def lap_bars():
 
 
 # ================================================================== assemble
-subs = [rear_frame(), rear_wheels(), front_frame(), casters(), floor(), deck(), body(), seat(), lap_bars()]
+subs = [rear_frame(), rear_wheels(), floor(), front_frame(), casters(), deck(), body(), seat(), lap_bars()]
 for sub in subs:
     m.main.place(sub)
     m.main.step()

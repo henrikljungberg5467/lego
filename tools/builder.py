@@ -81,13 +81,38 @@ class Sub:
         """Place another submodel inside this one."""
         return self.add(sub.name, color, pos, R)
 
+    MAX_STEP = 10
+
+    def _chunked(self):
+        """Split steps with many parts into several, bottom-up (largest y first)."""
+        steps, cur, note = [], [], None
+        for ln in self.lines:
+            if ln.startswith("0 STEP"):
+                steps.append(cur)
+                cur = []
+            elif ln.startswith("0 //"):
+                note = ln
+            else:
+                cur.append((note, ln))
+                note = None
+        steps.append(cur)
+        out = []
+        for st in steps:
+            if not st:
+                continue
+            if len(st) > self.MAX_STEP:
+                st = sorted(st, key=lambda it: -float(it[1].split()[3]))
+            for i in range(0, len(st), self.MAX_STEP):
+                for nt, ln in st[i:i + self.MAX_STEP]:
+                    if nt:
+                        out.append(nt)
+                    out.append(ln)
+                out.append("0 STEP")
+        return out
+
     def text(self):
         out = [f"0 FILE {self.name}", f"0 {self.title}", f"0 Name: {self.name}", "0 Author: Claude (for henrikljungberg5467)", "0 !LDRAW_ORG Unofficial_Model", ""]
-        body = list(self.lines)
-        while body and body[-1].startswith("0 STEP"):
-            body.pop()
-        out += body
-        out.append("0 STEP")
+        out += self._chunked()
         out.append("0 NOFILE")
         return "\n".join(out)
 
@@ -123,6 +148,7 @@ KIND = {"plate": PLATES, "tile": TILES, "brick": BRICKS}
 
 
 _avail = {}
+MIN_SETS = 3  # only use part/colour combinations that appeared in at least this many sets
 
 
 def exists(part, color):
@@ -131,7 +157,7 @@ def exists(part, color):
     if key not in _avail:
         try:
             import partsdb
-            _avail[key] = partsdb.sets_with(part, color) > 0
+            _avail[key] = partsdb.sets_with(part, color) >= MIN_SETS
         except Exception:
             _avail[key] = True
     return _avail[key]
