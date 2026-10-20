@@ -3,8 +3,11 @@
 Writes:
   <out>/parts.csv              Rebrickable import format (Part,Color,Quantity)
   <out>/bricklink_wanted.xml   BrickLink wanted list (upload via Want > Upload)
+  <out>/pick_a_brick.csv       LEGO Pick a Brick upload (elementId,quantity), needs REBRICKABLE_ELEMENTS
   <out>/parts.md               human readable table
 Usage: python3 tools/partlist.py model.mpd outdir
+
+REBRICKABLE_ELEMENTS points at Rebrickable's elements table (elements.csv or a parquet copy).
 """
 import os
 import sys
@@ -20,6 +23,27 @@ COLORS = {
     "14": (14, 3, "Gul"), "15": (15, 1, "Vit"), "25": (25, 4, "Orange"),
     "71": (71, 86, "Ljus blågrå"), "72": (72, 85, "Mörk blågrå"),
 }
+ELEMENTS = os.environ.get("REBRICKABLE_ELEMENTS",
+                          "/home/user/data-dl/kiliantscherny_Fun-With-LEGO-data/data/rebrickable/elements.parquet")
+
+
+def element_ids(part, color):
+    """LEGO element IDs for a Rebrickable part/colour, preferred (newest 7-digit) first."""
+    global _elements
+    if "_elements" not in globals():
+        _elements = None
+        if os.path.exists(ELEMENTS):
+            import pandas as pd
+            e = pd.read_parquet(ELEMENTS) if ELEMENTS.endswith(".parquet") else pd.read_csv(ELEMENTS)
+            _elements = {}
+            for eid, pn, cid in zip(e.element_id, e.part_num, e.color_id):
+                _elements.setdefault((str(pn), int(cid)), []).append(int(eid))
+    if _elements is None:
+        return None
+    ids = _elements.get((part, color), [])
+    return sorted(ids, key=lambda i: (len(str(i)) == 7, i), reverse=True)
+
+
 # LDraw part number -> BrickLink item number where they differ
 BRICKLINK_PART = {"32123b": "4265c", "6141": "4073", "3040b": "3040", "32064a": "32064a"}
 
@@ -34,7 +58,8 @@ def main():
         rb_col, bl_col, cname = COLORS[col]
         name = partsdb.name(part) or L.part_header(part + ".dat")
         rows.append(dict(part=part, color=col, rb_color=rb_col, bl_color=bl_col, cname=cname, n=n, name=name,
-                         bl_part=BRICKLINK_PART.get(part, part), sets=partsdb.sets_with(part, rb_col)))
+                         bl_part=BRICKLINK_PART.get(part, part), sets=partsdb.sets_with(part, rb_col),
+                         elements=element_ids(part, rb_col)))
     rows.sort(key=lambda r: (r["cname"], r["name"]))
     with open(os.path.join(out, "parts.csv"), "w") as fh:
         fh.write("Part,Color,Quantity\n")
@@ -46,12 +71,26 @@ def main():
             fh.write(f"  <ITEM><ITEMTYPE>P</ITEMTYPE><ITEMID>{r['bl_part']}</ITEMID><COLOR>{r['bl_color']}</COLOR>"
                      f"<MINQTY>{r['n']}</MINQTY></ITEM>\n")
         fh.write("</INVENTORY>\n")
+    have_el = all(r["elements"] is not None for r in rows)
+    if have_el:
+        with open(os.path.join(out, "pick_a_brick.csv"), "w") as fh:
+            fh.write("elementId,quantity\n")
+            for r in rows:
+                if r["elements"]:
+                    fh.write(f"{r['elements'][0]},{r['n']}\n")
+        missing = [r for r in rows if not r["elements"]]
+        if missing:
+            print("no element id:", [(r["part"], r["color"]) for r in missing])
     total = sum(r["n"] for r in rows)
     with open(os.path.join(out, "parts.md"), "w") as fh:
         fh.write(f"# Dellista – {total} delar, {len(rows)} unika del/färg-kombinationer\n\n")
-        fh.write("| Antal | Del | Färg | Benämning | Finns i antal officiella set |\n|---:|---|---|---|---:|\n")
+        if have_el:
+            fh.write("Elementnummer är LEGOs nummer för del + färg (det som Pick a Brick använder). "
+                     "Det första står i `pick_a_brick.csv`; övriga är äldre eller alternativa nummer för samma del.\n\n")
+        fh.write("| Antal | Del | Färg | Benämning | Elementnummer | Finns i antal officiella set |\n|---:|---|---|---|---|---:|\n")
         for r in rows:
-            fh.write(f"| {r['n']} | {r['part']} | {r['cname']} | {r['name']} | {r['sets']} |\n")
+            el = ", ".join(str(i) for i in (r["elements"] or []))
+            fh.write(f"| {r['n']} | {r['part']} | {r['cname']} | {r['name']} | {el} | {r['sets']} |\n")
     print(f"{total} parts, {len(rows)} lots -> {out}")
 
 

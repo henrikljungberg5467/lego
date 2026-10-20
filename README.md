@@ -26,6 +26,7 @@ En byggbar LEGO-modell av nollsvängsklipparen John Deere Z315E med 42-tums klip
 2. **3D-visare:** `viewer/index.html` visar modellen steg för steg med dellista för varje steg. Den publiceras även som Claude-artefakt.
 3. **Köpa delar:**
    - BrickLink: ladda upp [`docs/bricklink_wanted.xml`](docs/bricklink_wanted.xml) under *Want → Upload*.
+   - LEGO Pick a Brick: ladda upp [`docs/pick_a_brick.csv`](docs/pick_a_brick.csv) (elementId, quantity). Filen har 111 rader och 443 delar. Pick a Brick har inte alla element i lager, så det som saknas där får köpas på BrickLink. Elementnumren kommer från Rebrickables elementtabell (mars 2024); om något nummer inte känns igen finns alternativa nummer för samma del i [`docs/parts.md`](docs/parts.md).
    - Rebrickable: importera [`docs/parts.csv`](docs/parts.csv) (Part, Color, Quantity). Därifrån kan listan skickas vidare till BrickLink eller LEGO Pick a Brick.
    - Hela listan med svenska färgnamn finns i [`docs/parts.md`](docs/parts.md).
 
@@ -50,7 +51,7 @@ Saker som är förenklade jämfört med originalet:
 ```
 model/z315e.py        generator: hela modellen beskriven i Python (koordinater i LDU)
 model/z315e.mpd       den genererade LDraw-modellen
-docs/                 dellistor (BrickLink, Rebrickable, Markdown)
+docs/                 dellistor (Pick a Brick, BrickLink, Rebrickable, Markdown)
 stickers/             dekalark att skriva ut
 renders/              renderingar
 viewer/               3D-visare med byggsteg (three.js + LDrawLoader)
@@ -62,7 +63,7 @@ tools/build_viewer.py packar modellen med alla LDraw-delar för visaren
 
 ### Generera om
 
-Verktygen behöver LDraw-biblioteket, [LDCad Shadow Library](https://github.com/RolandMelkert/LDCadShadowLibrary) och Rebrickables databas. Den sista finns som SQLite i npm-paketet `lego-oracle`. Sökvägarna anges med `LDRAW_LIB`, `LDCAD_SHADOW` och `REBRICKABLE_DB`.
+Verktygen behöver LDraw-biblioteket, [LDCad Shadow Library](https://github.com/RolandMelkert/LDCadShadowLibrary) och Rebrickables databas. Den sista finns som SQLite i npm-paketet `lego-oracle`. Rebrickables elementtabell (för Pick a Brick-numren) finns som parquet i [kiliantscherny/Fun-With-LEGO-data](https://github.com/kiliantscherny/Fun-With-LEGO-data). Sökvägarna anges med `LDRAW_LIB`, `LDCAD_SHADOW`, `REBRICKABLE_DB` och `REBRICKABLE_ELEMENTS`.
 
 ```sh
 npm install                                   # three.js + playwright
