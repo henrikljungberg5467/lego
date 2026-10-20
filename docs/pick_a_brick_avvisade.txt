@@ -1,0 +1,11 @@
+# Element-ID som Pick a Brick (lego.com, Sverige) svarade "inte tillgängligt" på, uppladdning 2026-10-20.
+# En rad per element-ID. Lägg till nya rader om fler avvisas.
+6263816
+4613966
+4552333
+6388490
+303076
+6084612
+4107081
+4121715
+4297209

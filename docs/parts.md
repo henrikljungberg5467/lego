@@ -10,7 +10,7 @@ Elementnummer är LEGOs nummer för del + färg (det som Pick a Brick använder)
 | 2 | 3009 | Grön | Brick 1 x 6 | 4111844, 300928 | 112 |
 | 2 | 3008 | Grön | Brick 1 x 8 | 4143953, 4112839, 300828 | 37 |
 | 4 | 3941 | Grön | Brick Round 2 x 2 with Axle Hole | 4251378, 614328 | 84 |
-| 4 | 48092 | Grön | Brick Round Corner 4 x 4 Macaroni Wide with 3 Studs | 6263816, 6013669, 6013668 | 9 |
+| 4 | 48092 | Grön | Brick Round Corner 4 x 4 Macaroni Wide with 3 Studs | 6013669, 6013668 | 9 |
 | 8 | 3024 | Grön | Plate 1 x 1 | 302428 | 309 |
 | 3 | 4477 | Grön | Plate 1 x 10 | 6467868, 6004926, 4508535, 4497179, 4161145, 4107759, 447728 | 27 |
 | 2 | 3023 | Grön | Plate 1 x 2 | 302328 | 664 |
@@ -42,7 +42,7 @@ Elementnummer är LEGOs nummer för del + färg (det som Pick a Brick använder)
 | 3 | 26603 | Grön | Tile 2 x 3 | 6288100 | 43 |
 | 7 | 87079 | Grön | Tile 2 x 4 with Groove | 4566179 | 100 |
 | 1 | 14769 | Grön | Tile Round 2 x 2 with Bottom Stud Holder | 6238881 | 15 |
-| 8 | 3004 | Gul | Brick 1 x 2 | 4613966, 300424 | 1168 |
+| 8 | 3004 | Gul | Brick 1 x 2 | 300424 | 1168 |
 | 2 | 3009 | Gul | Brick 1 x 6 | 300924 | 493 |
 | 7 | 3008 | Gul | Brick 1 x 8 | 300824 | 299 |
 | 2 | 3007 | Gul | Brick 2 x 8 | 4639693, 300724 | 204 |
@@ -51,11 +51,11 @@ Elementnummer är LEGOs nummer för del + färg (det som Pick a Brick använder)
 | 2 | 3666 | Gul | Plate 1 x 6 | 366624 | 433 |
 | 1 | 3020 | Gul | Plate 2 x 4 | 302024 | 917 |
 | 4 | 3034 | Gul | Plate 2 x 8 | 303424 | 244 |
-| 1 | 3036 | Gul | Plate 6 x 8 | 4552333, 4166761, 303674, 303624 | 16 |
+| 1 | 3036 | Gul | Plate 6 x 8 | 4166761, 303674, 303624 | 16 |
 | 2 | 54200 | Gul | Slope 30° 1 x 1 x 2/3 (Cheese Slope) | 4504381, 4283095 | 354 |
 | 18 | 11477 | Gul | Slope Curved 2 x 1 No Studs [1/2 Bow] | 6029947 | 187 |
 | 2 | 3070b | Gul | Tile 1 x 1 with Groove | 307024 | 377 |
-| 3 | 87079 | Gul | Tile 2 x 4 with Groove | 6388490, 4560181 | 219 |
+| 3 | 87079 | Gul | Tile 2 x 4 with Groove | 4560181 | 219 |
 | 2 | 55981 | Gul | Wheel 18 x 14 with Pin Hole, Fake Bolts and Shallow Spokes | 6109681, 4490142 | 46 |
 | 2 | 56145 | Gul | Wheel 30.4 x 20 without Pinholes, with Reinforced Rim | 6286380, 4490139 | 14 |
 | 8 | 32073 | Ljus blågrå | Technic Axle 5 | 4211639, 32073194 | 850 |
@@ -84,7 +84,7 @@ Elementnummer är LEGOs nummer för del + färg (det som Pick a Brick använder)
 | 2 | 3021 | Svart | Plate 2 x 3 | 302126 | 1821 |
 | 2 | 3020 | Svart | Plate 2 x 4 | 302026 | 2268 |
 | 4 | 3034 | Svart | Plate 2 x 8 | 303426 | 1047 |
-| 1 | 3030 | Svart | Plate 4 x 10 | 303076, 303026 | 316 |
+| 1 | 3030 | Svart | Plate 4 x 10 | 303026 | 316 |
 | 1 | 3029 | Svart | Plate 4 x 12 | 302926 | 236 |
 | 1 | 3031 | Svart | Plate 4 x 4 | 4243819, 303126 | 788 |
 | 2 | 3035 | Svart | Plate 4 x 8 | 303526 | 507 |
@@ -98,15 +98,15 @@ Elementnummer är LEGOs nummer för del + färg (det som Pick a Brick använder)
 | 4 | 3705 | Svart | Technic Axle 4 | 370526 | 1641 |
 | 2 | 3706 | Svart | Technic Axle 6 | 370626 | 1237 |
 | 2 | 3707 | Svart | Technic Axle 8 | 370726 | 825 |
-| 2 | 59443 | Svart | Technic Axle Connector Smooth [with x Hole + Orientation] | 6084612, 4512363 | 507 |
-| 2 | 32039 | Svart | Technic Axle Connector with Axle Hole | 4107081, 3203926 | 416 |
+| 2 | 59443 | Svart | Technic Axle Connector Smooth [with x Hole + Orientation] | 4512363 | 507 |
+| 2 | 42135 | Svart | Technic Axle Connector with Axle Hole [Reinforced] | 6331716 | 111 |
 | 2 | 32014 | Svart | Technic Axle and Pin Connector Angled #6 - 90° | 6268905, 4107767 | 204 |
 | 1 | 32140 | Svart | Technic Beam 2 x 4 L-Shape Thick | 6271825, 4120017, 3214026 | 388 |
 | 1 | 60484 | Svart | Technic Beam 3 x 3 T-Shape Thick | 4552347, 4535771 | 186 |
 | 2 | 3700 | Svart | Technic Brick 1 x 2 [1 Pin Hole] | 370026 | 752 |
 | 1 | 32064a | Svart | Technic Brick 1 x 2 with Axle Hole Type 1 [+ Opening] and Bottom Pin | 6178922, 4233487, 4114294 | 353 |
 | 4 | 3702 | Svart | Technic Brick 1 x 8 [7 Pin Holes] | 370226 | 320 |
-| 12 | 2780 | Svart | Technic Pin with Friction Ridges Lengthwise and Center Slots | 4121715, 278026 | 2512 |
+| 12 | 61332 | Svart | Technic Pin with Friction Ridges Lengthwise with No Center Slots | 6279875 | 1070 |
 | 2 | 32001 | Svart | Technic Plate 2 x 6 [5 Holes] | 3200126 | 210 |
 | 1 | 3070b | Svart | Tile 1 x 1 with Groove | 307026 | 822 |
 | 1 | 63864 | Svart | Tile 1 x 3 | 4558170 | 493 |
@@ -114,4 +114,4 @@ Elementnummer är LEGOs nummer för del + färg (det som Pick a Brick använder)
 | 1 | 4162 | Svart | Tile 1 x 8 with Groove | 416226 | 650 |
 | 2 | 15535 | Svart | Tile Round 2 x 2 with Hole | 6143850 | 176 |
 | 2 | 58090 | Svart | Tyre 30.4 x 14 VR Solid | 4550937, 4500518 | 126 |
-| 2 | 55976 | Svart | Tyre 56 x 26 Balloon | 4297209 | 67 |
+| 2 | 55976 | Svart | Tyre 56 x 26 Balloon |  | 67 |

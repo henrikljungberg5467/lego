@@ -104,9 +104,9 @@ def front_frame():
         px = x * PIVOT_X
         Rl = rot(x="-X", z="-Z") if x > 0 else rot(x="+X", z="-Z")
         for dx in (20, 40):
-            s.add("2780", BLACK, (px - x * dx, -140, CROSSBAR_Z), R_PIN_Y)
+            s.add("61332", BLACK, (px - x * dx, -140, CROSSBAR_Z), R_PIN_Y)
         for dz in (20, 40, 60):
-            s.add("2780", BLACK, (px, -140, CROSSBAR_Z + dz), R_PIN_Y)
+            s.add("61332", BLACK, (px, -140, CROSSBAR_Z + dz), R_PIN_Y)
         s.add("32526", GREEN, (px, -150, CROSSBAR_Z + 80), Rl, "corner")
     return s
 
@@ -179,7 +179,7 @@ def floor():
     s.add(AXLE[2], BLACK, (-70, -142, -100), rot(x="+Z", y="+Y"))
     s.add("32140", BLACK, (-70, -142, -110), rot(y="+Z", z="-Y"), "deck lift pedal arm")
     for x in (-70, -50):
-        s.add("2780", BLACK, (x, -202, -120), rot(x="+Z", y="+Y"))
+        s.add("61332", BLACK, (x, -202, -120), rot(x="+Z", y="+Y"))
     s.add("60484", BLACK, (-70, -242, -130), rot(y="+Z", z="+Y"), "pedal pad")
     return s
 
@@ -386,7 +386,7 @@ def lap_bar(s, side, park_deg=0.0):
         s.add(part, color, np.array([px, py, pz]) + Rp @ p, Rp @ R, note)
 
     put(AXLE[2], BLACK, (px, py, -80), rot(x="+Z", y="+Y"))
-    put("32039", BLACK, (px, py, -90), rot(z="+Z", x="+Y"), "lap bar hub")
+    put("42135", BLACK, (px, py, -90), rot(z="+Z", x="+Y"), "lap bar hub")
     put(AXLE[8], BLACK, (px, -240, -110), R_AXLE_Y, "lap bar")
     put("32014", BLACK, (px, -330, -110), rot(y="-Y", z=("+X" if side > 0 else "-X")))
     put(AXLE[4], BLACK, (px - side * 50, -330, -110), I)

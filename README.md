@@ -26,7 +26,7 @@ En byggbar LEGO-modell av nollsvängsklipparen John Deere Z315E med 42-tums klip
 2. **3D-visare:** `viewer/index.html` visar modellen steg för steg med dellista för varje steg. Den publiceras även som Claude-artefakt.
 3. **Köpa delar:**
    - BrickLink: ladda upp [`docs/bricklink_wanted.xml`](docs/bricklink_wanted.xml) under *Want → Upload*.
-   - LEGO Pick a Brick: ladda upp [`docs/pick_a_brick.csv`](docs/pick_a_brick.csv) (elementId, quantity). Filen har 111 rader och 443 delar. Pick a Brick har inte alla element i lager, så det som saknas där får köpas på BrickLink. Elementnumren kommer från Rebrickables elementtabell (mars 2024); om något nummer inte känns igen finns alternativa nummer för samma del i [`docs/parts.md`](docs/parts.md).
+   - LEGO Pick a Brick: ladda upp [`docs/pick_a_brick.csv`](docs/pick_a_brick.csv) (elementId, quantity). Pick a Brick tar max 200 olika delar per uppladdning; filen har 110 rader. Vid första uppladdningen (oktober 2026) saknades 9 rader. De står i [`docs/inte_pa_pick_a_brick.md`](docs/inte_pa_pick_a_brick.md) tillsammans med [`docs/pick_a_brick_forsok2.csv`](docs/pick_a_brick_forsok2.csv) (andra element-ID och nyare versioner att prova) och [`docs/bricklink_inte_pa_pab.xml`](docs/bricklink_inte_pa_pab.xml) för att köpa resten på BrickLink. Elementnumren kommer från Rebrickables elementtabell (mars 2024); om något nummer inte känns igen finns alternativa nummer för samma del i [`docs/parts.md`](docs/parts.md).
    - Rebrickable: importera [`docs/parts.csv`](docs/parts.csv) (Part, Color, Quantity). Därifrån kan listan skickas vidare till BrickLink eller LEGO Pick a Brick.
    - Hela listan med svenska färgnamn finns i [`docs/parts.md`](docs/parts.md).
 
