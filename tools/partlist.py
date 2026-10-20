@@ -6,9 +6,8 @@ Writes:
   <out>/pick_a_brick.csv       LEGO Pick a Brick upload (elementId,quantity), needs REBRICKABLE_ELEMENTS
   <out>/parts.md               human readable table
 If <out>/pick_a_brick_avvisade.txt lists element IDs that Pick a Brick rejected, those IDs are skipped and
-  <out>/pick_a_brick_forsok2.csv    new attempt for the affected parts (other IDs or newer replacement parts)
-  <out>/inte_pa_pick_a_brick.md     what Pick a Brick did not have, and what to do instead
-  <out>/bricklink_inte_pa_pab.xml   BrickLink wanted list for those parts
+  <out>/inte_pa_pick_a_brick.md     what Pick a Brick does not have, and what was substituted
+  <out>/bricklink_inte_pa_pab.xml   BrickLink wanted list for the parts with no accepted element ID
 Usage: python3 tools/partlist.py model.mpd outdir
 
 REBRICKABLE_ELEMENTS points at Rebrickable's elements table (elements.csv or a parquet copy).
@@ -47,6 +46,14 @@ def element_ids(part, color):
     ids = _elements.get((part, color), [])
     return sorted(ids, key=lambda i: (len(str(i)) == 7, i), reverse=True)
 
+
+# substitutions made because Pick a Brick did not stock the original element
+SUBSTITUTIONS = [
+    ("12 × friktionsstift 2780 (svart)", "12 × friktionsstift 61332 (svart), nyare version med samma form"),
+    ("2 × axelkoppling med tvärhål 32039 (svart)", "2 × 42135 (svart), förstärkt version med samma form"),
+    ("4 × rund hörnkloss 4 × 4, 48092 (grön)", "12 × rund hörnplatta 4 × 4, 30565 (grön), sex i höjd per hörn"),
+    ("1 × platta 6 × 8, 3036 (gul) under sätet", "fyra plattor 2 × 8, 3034 (gul), i stället för 6 × 8 + 2 × 8"),
+]
 
 # current part (used in the model) -> older mould it replaced
 REPLACES = {"61332": "2780", "42135": "32039"}
@@ -118,41 +125,37 @@ def main():
         missing = [r for r in rows if not r["elements"]]
         if missing:
             print("no element id:", [(r["part"], r["color"]) for r in missing])
-    hit = [r for r in rows if r["rejected"]]
-    if hit:
-        retry = [r for r in hit if r["elements"]]
-        with open(os.path.join(out, "pick_a_brick_forsok2.csv"), "w") as fh:
-            fh.write("elementId,quantity\n")
-            for r in retry:
-                fh.write(f"{r['elements'][0]},{r['n']}\n")
+    if rejected:
+        gone = [r for r in rows if r["elements"] is not None and not r["elements"]]
+        old = os.path.join(out, "pick_a_brick_forsok2.csv")
+        if os.path.exists(old):
+            os.remove(old)
         with open(os.path.join(out, "bricklink_inte_pa_pab.xml"), "w") as fh:
             fh.write("<INVENTORY>\n")
-            for r in hit:
+            for r in gone:
                 fh.write(f"  <ITEM><ITEMTYPE>P</ITEMTYPE><ITEMID>{r['bl_part']}</ITEMID><COLOR>{r['bl_color']}</COLOR>"
                          f"<MINQTY>{r['n']}</MINQTY></ITEM>\n")
             fh.write("</INVENTORY>\n")
         with open(os.path.join(out, "inte_pa_pick_a_brick.md"), "w") as fh:
-            n_parts = sum(r["n"] for r in hit)
-            fh.write(f"# Delar som Pick a Brick inte hade\n\n"
-                     f"{len(hit)} av {len(rows)} rader ({n_parts} av {sum(r['n'] for r in rows)} delar) avvisades med "
-                     f"\"Detta element-ID är för närvarande inte tillgängligt på Pick a Brick\".\n\n"
-                     f"- **Försök igen:** ladda upp `pick_a_brick_forsok2.csv`. Den har andra element-ID för samma del, "
-                     f"eller den nuvarande versionen av delen.\n"
-                     f"- **Det som inte går att få där:** köp på BrickLink med `bricklink_inte_pa_pab.xml` "
-                     f"(den innehåller alla rader nedan, så den fungerar även om försök 2 misslyckas).\n\n")
-            fh.write("| Antal | Del | Färg | Benämning | Avvisat ID | Gör så här |\n|---:|---|---|---|---|---|\n")
-            for r in hit:
-                eid, oldpart = r["rejected"]
-                if not r["elements"]:
-                    todo = f"Finns inte på Pick a Brick. Köp på BrickLink (del {r['bl_part']})."
-                elif oldpart != r["part"]:
-                    todo = (f"Ersatt av nyare versionen {r['part']} (samma form och funktion). "
-                            f"Prova element {r['elements'][0]}.")
-                else:
-                    todo = "Prova element " + " eller ".join(str(i) for i in r["elements"][:2]) + ", annars BrickLink."
-                part = oldpart if oldpart == r["part"] else f"{oldpart} → {r['part']}"
-                fh.write(f"| {r['n']} | {part} | {r['cname']} | {r['name']} | {eid} | {todo} |\n")
-        print(f"{len(hit)} rejected lots, {len(retry)} with something new to try")
+            fh.write("# Delar som inte finns på Pick a Brick\n\n"
+                     "Kontrollerat mot Pick a Brick (lego.com, Sverige) i oktober 2026. Element-ID som avvisats står i "
+                     "`pick_a_brick_avvisade.txt`; `pick_a_brick.csv` innehåller bara element som har godkänts.\n\n"
+                     "## Köp på BrickLink\n\n"
+                     "Ladda upp `bricklink_inte_pa_pab.xml` som önskelista på BrickLink.\n\n"
+                     "| Antal | Del | Färg | Benämning |\n|---:|---|---|---|\n")
+            for r in gone:
+                fh.write(f"| {r['n']} | {r['part']} | {r['cname']} | {r['name']} |\n")
+            fh.write("\n## Ersatta i modellen\n\n"
+                     "De här delarna fanns inte på Pick a Brick och är utbytta mot delar som finns där. "
+                     "Modellen är kontrollerad igen efter bytet.\n\n"
+                     "| Tidigare | Nu |\n|---|---|\n")
+            for a, b in SUBSTITUTIONS:
+                fh.write(f"| {a} | {b} |\n")
+            fh.write("\n## Gick igenom med ett annat element-ID\n\n"
+                     "Gul kloss 1 × 2, gul platta 2 × 4 slät, svart platta 4 × 10 och svart axelkoppling slät "
+                     "nekades med sitt första element-ID men godkändes med ett äldre nummer för samma del. "
+                     "`pick_a_brick.csv` använder de godkända numren.\n")
+        print(f"{len(gone)} lots not on Pick a Brick")
     total = sum(r["n"] for r in rows)
     with open(os.path.join(out, "parts.md"), "w") as fh:
         fh.write(f"# Dellista – {total} delar, {len(rows)} unika del/färg-kombinationer\n\n")

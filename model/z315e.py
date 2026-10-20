@@ -216,12 +216,13 @@ def deck():
     edge = [(x, DECK_Z0 + 10) for x in range(-90, 91, 20)]
     fill(s, "plate", GREEN, -DECK_X, DECK_X, DECK_Z0, DECK_Z1, -72, avoid=used + edge, prefer="z")
     s.step()
-    # skirt: brick + two plates under the edge; macaroni corners at the front
+    # skirt: two bricks under the edge; rounded front corners from six stacked 4x4 round
+    # corner plates (same outer radius as the macaroni brick, which Pick a Brick lacks)
     sk = [(1, 1), (1, 2), (1, 3), (1, 4), (1, 6), (1, 8), (1, 10), (1, 12)]
     for x in (-1, 1):
         R = I if x > 0 else R_CORNER_R
-        for y in (-64, -40):
-            s.add("48092", GREEN, (x * 100, y, -250), R, "deck corner skirt")
+        for y in range(-64, -16, 8):
+            s.add("30565", GREEN, (x * 140, y, -290), R, "deck corner skirt")
     for kind, y in (("brick", -64), ("brick", -40)):
         fill(s, kind, GREEN, -100, 100, DECK_Z0, DECK_Z0 + 20, y, sizes=sk)
         fill(s, kind, GREEN, -DECK_X, DECK_X, DECK_Z1 - 20, DECK_Z1, y, sizes=sk)
@@ -334,7 +335,8 @@ def seat():
     s = m.sub("seat", "Operator seat")
     fill(s, "brick", BLACK, -60, 60, -60, 80, -176)
     s.step()
-    fill(s, "plate", YELLOW, -80, 80, -80, 80, -184)
+    # seat base: four 2x8 plates along Z (the yellow 6x8 plate is not on Pick a Brick)
+    fill(s, "plate", YELLOW, -80, 80, -80, 80, -184, sizes=[(2, 8)], prefer="z")
     s.step()
     # cushion
     fill(s, "brick", YELLOW, -80, 80, -40, 40, -208)

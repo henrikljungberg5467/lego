@@ -1,4 +1,4 @@
-# Dellista – 443 delar, 111 unika del/färg-kombinationer
+# Dellista – 453 delar, 109 unika del/färg-kombinationer
 
 Elementnummer är LEGOs nummer för del + färg (det som Pick a Brick använder). Det första står i `pick_a_brick.csv`; övriga är äldre eller alternativa nummer för samma del.
 
@@ -10,7 +10,6 @@ Elementnummer är LEGOs nummer för del + färg (det som Pick a Brick använder)
 | 2 | 3009 | Grön | Brick 1 x 6 | 4111844, 300928 | 112 |
 | 2 | 3008 | Grön | Brick 1 x 8 | 4143953, 4112839, 300828 | 37 |
 | 4 | 3941 | Grön | Brick Round 2 x 2 with Axle Hole | 4251378, 614328 | 84 |
-| 4 | 48092 | Grön | Brick Round Corner 4 x 4 Macaroni Wide with 3 Studs | 6013669, 6013668 | 9 |
 | 8 | 3024 | Grön | Plate 1 x 1 | 302428 | 309 |
 | 3 | 4477 | Grön | Plate 1 x 10 | 6467868, 6004926, 4508535, 4497179, 4161145, 4107759, 447728 | 27 |
 | 2 | 3023 | Grön | Plate 1 x 2 | 302328 | 664 |
@@ -24,7 +23,7 @@ Elementnummer är LEGOs nummer för del + färg (det som Pick a Brick använder)
 | 1 | 3032 | Grön | Plate 4 x 6 | 4116671 | 154 |
 | 1 | 3958 | Grön | Plate 6 x 6 | 6097194, 4626001, 4226356, 4140525, 4112519 | 62 |
 | 2 | 41539 | Grön | Plate 8 x 8 | 4161677 | 46 |
-| 2 | 30565 | Grön | Plate Round Corner 4 x 4 | 6038682, 4522245, 4167200 | 74 |
+| 14 | 30565 | Grön | Plate Round Corner 4 x 4 | 6038682, 4522245, 4167200 | 74 |
 | 3 | 4286 | Grön | Slope 33° 3 x 1 | 4107637, 428628 | 120 |
 | 4 | 3298 | Grön | Slope 33° 3 x 2 | 6226928, 4497188, 329828 | 39 |
 | 11 | 3040b | Grön | Slope 45° 2 x 1 with Bottom Pin | 4121969, 4109668, 304028 | 212 |
@@ -50,8 +49,7 @@ Elementnummer är LEGOs nummer för del + färg (det som Pick a Brick använder)
 | 2 | 3024 | Gul | Plate 1 x 1 | 302424 | 599 |
 | 2 | 3666 | Gul | Plate 1 x 6 | 366624 | 433 |
 | 1 | 3020 | Gul | Plate 2 x 4 | 302024 | 917 |
-| 4 | 3034 | Gul | Plate 2 x 8 | 303424 | 244 |
-| 1 | 3036 | Gul | Plate 6 x 8 | 4166761, 303674, 303624 | 16 |
+| 7 | 3034 | Gul | Plate 2 x 8 | 303424 | 244 |
 | 2 | 54200 | Gul | Slope 30° 1 x 1 x 2/3 (Cheese Slope) | 4504381, 4283095 | 354 |
 | 18 | 11477 | Gul | Slope Curved 2 x 1 No Studs [1/2 Bow] | 6029947 | 187 |
 | 2 | 3070b | Gul | Tile 1 x 1 with Groove | 307024 | 377 |

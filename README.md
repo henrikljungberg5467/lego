@@ -7,7 +7,7 @@ En byggbar LEGO-modell av nollsvängsklipparen John Deere Z315E med 42-tums klip
 | | |
 |---|---|
 | Skala | 1:8 (bakdäck 56 mm = 18" i verkligheten, framhjul 30 mm) |
-| Antal delar | 443 (111 olika del/färg-kombinationer) |
+| Antal delar | 453 (109 olika del/färg-kombinationer) |
 | Mått | ca 23 × 18 × 14 cm (L × B × H) |
 | Färger | grön, gul, svart, mörk och ljus blågrå, en orange detalj |
 | Filformat | LDraw MPD – öppnas i BrickLink Studio, LeoCAD eller LDCad |
@@ -26,18 +26,18 @@ En byggbar LEGO-modell av nollsvängsklipparen John Deere Z315E med 42-tums klip
 2. **3D-visare:** `viewer/index.html` visar modellen steg för steg med dellista för varje steg. Den publiceras även som Claude-artefakt.
 3. **Köpa delar:**
    - BrickLink: ladda upp [`docs/bricklink_wanted.xml`](docs/bricklink_wanted.xml) under *Want → Upload*.
-   - LEGO Pick a Brick: ladda upp [`docs/pick_a_brick.csv`](docs/pick_a_brick.csv) (elementId, quantity). Pick a Brick tar max 200 olika delar per uppladdning; filen har 110 rader. Vid första uppladdningen (oktober 2026) saknades 9 rader. De står i [`docs/inte_pa_pick_a_brick.md`](docs/inte_pa_pick_a_brick.md) tillsammans med [`docs/pick_a_brick_forsok2.csv`](docs/pick_a_brick_forsok2.csv) (andra element-ID och nyare versioner att prova) och [`docs/bricklink_inte_pa_pab.xml`](docs/bricklink_inte_pa_pab.xml) för att köpa resten på BrickLink. Elementnumren kommer från Rebrickables elementtabell (mars 2024); om något nummer inte känns igen finns alternativa nummer för samma del i [`docs/parts.md`](docs/parts.md).
+   - LEGO Pick a Brick: ladda upp [`docs/pick_a_brick.csv`](docs/pick_a_brick.csv) (elementId, quantity, 108 rader). Alla element i den är godkända av Pick a Brick (kontrollerat i oktober 2026). Det enda som saknas där är de två bakdäcken, som köps på BrickLink med [`docs/bricklink_inte_pa_pab.xml`](docs/bricklink_inte_pa_pab.xml). Vad som byttes ut för att allt annat skulle finnas på Pick a Brick står i [`docs/inte_pa_pick_a_brick.md`](docs/inte_pa_pick_a_brick.md).
    - Rebrickable: importera [`docs/parts.csv`](docs/parts.csv) (Part, Color, Quantity). Därifrån kan listan skickas vidare till BrickLink eller LEGO Pick a Brick.
    - Hela listan med svenska färgnamn finns i [`docs/parts.md`](docs/parts.md).
 
-Den enda ovanligare delen är den gröna Technic-balken 1 × 15 (32278). Den har funnits i sex set, bland annat LEGO 42157 John Deere 948L-II.
+Den enda ovanligare delen är den gröna Technic-balken 1 × 15 (32278). Den har funnits i sex set, bland annat LEGO 42157 John Deere 948L-II, och finns på Pick a Brick.
 
 ## Hur modellen är kontrollerad
 
 Modellen är inte provbyggd fysiskt än, men den har kontrollerats digitalt med verktygen i `tools/`:
 
 - **Delar och färger:** varje del/färg-kombination har slagits upp i Rebrickables lagerdata. Alla förekommer i officiella LEGO-set, och de automatiskt utlagda plattorna och klossarna använder bara kombinationer som funnits i minst tre set.
-- **Anslutningar:** alla stift, axlar, hål och knoppar matchas mot anslutningsdata från LDCad Shadow Library. Alla 443 delar hänger ihop i en enda struktur, och inga stift sitter i fel sorts hål.
+- **Anslutningar:** alla stift, axlar, hål och knoppar matchas mot anslutningsdata från LDCad Shadow Library. Alla 453 delar hänger ihop i en enda struktur, och inga stift sitter i fel sorts hål.
 - **Kollisioner:** varje del voxeliseras med 1 LDU (0,4 mm) upplösning. Inga delar går in i varandra.
 
 Saker som är förenklade jämfört med originalet:
