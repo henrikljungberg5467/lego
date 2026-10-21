@@ -23,8 +23,8 @@ En byggbar LEGO-modell av nollsvängsklipparen John Deere Z315E med 42-tums klip
 
 ## Bygga modellen
 
-1. **Instruktioner:** öppna [`model/z315e.mpd`](model/z315e.mpd) i [BrickLink Studio](https://www.bricklink.com/v3/studio/download.page) (gratis). Filen innehåller byggstegen i nio delmoduler: bakram, drivhjul, golv och fotstöd, främre ram, länkhjul, klippaggregat, kaross, säte och styrspakar. Studios instruktionsläge gör en utskrivbar PDF av dem.
-2. **3D-visare:** `viewer/index.html` visar modellen steg för steg med dellista för varje steg. Den publiceras även som Claude-artefakt.
+1. **Instruktioner:** öppna [`model/z315e.mpd`](model/z315e.mpd) i [BrickLink Studio](https://www.bricklink.com/v3/studio/download.page) (gratis). Främre ramen, klippaggregatet, karossen och sätet är delmonteringar som byggs för sig och sätts på plats färdiga. Bakram, drivhjul, golv, länkhjul, upphängning och styrspakar byggs direkt på modellen. Studios instruktionsläge gör en utskrivbar PDF av stegen.
+2. **3D-visare:** `viewer/index.html` visar modellen steg för steg med dellista för varje steg. Varje del kommer in från ett håll där den inte krockar med det som redan är byggt, och delmonteringarna byggs för sig innan de åker in på plats. När delar sätts underifrån vänds vyn så att man ser undersidan. Visaren publiceras även som Claude-artefakt.
 3. **Köpa delar:**
    - BrickLink: ladda upp [`docs/bricklink_wanted.xml`](docs/bricklink_wanted.xml) under *Want → Upload*.
    - LEGO Pick a Brick: ladda upp [`docs/pick_a_brick.csv`](docs/pick_a_brick.csv) (elementId, quantity, 115 rader). Elementen är kontrollerade mot Pick a Brick i oktober 2026, utom de sex som kom till med knivarna: 24-kuggshjulet, 8-kuggshjulet, knivarna, knoppen, axeln med stopp och Technic-plattan 2 × 8. Det enda som saknas där är de två bakdäcken, som köps på BrickLink med [`docs/bricklink_inte_pa_pab.xml`](docs/bricklink_inte_pa_pab.xml). Vad som byttes ut för att allt annat skulle finnas på Pick a Brick står i [`docs/inte_pa_pick_a_brick.md`](docs/inte_pa_pick_a_brick.md).
@@ -40,6 +40,7 @@ Modellen är inte provbyggd fysiskt än, men den har kontrollerats digitalt med 
 - **Delar och färger:** varje del/färg-kombination har slagits upp i Rebrickables lagerdata. Alla förekommer i officiella LEGO-set, och de automatiskt utlagda plattorna och klossarna använder bara kombinationer som funnits i minst tre set.
 - **Anslutningar:** alla stift, axlar, hål och knoppar matchas mot anslutningsdata från LDCad Shadow Library. Alla 485 delar hänger ihop i en enda struktur, och inga stift sitter i fel sorts hål. Knivarnas axlar går i runda hål, så de kan snurra fritt.
 - **Kollisioner:** varje del voxeliseras med 1 LDU (0,4 mm) upplösning. Inga delar går in i varandra.
+- **Byggordning:** för varje del, och för varje delmontering när den monteras, kontrolleras att den har en fri väg in förbi det som redan är byggt: uppifrån, nedifrån eller från sidan.
 - **Kugghjul:** alla kugghjul sitter på LEGOs standardavstånd (24 + 24 kuggar: 3 knoppar, 24 + 8 kuggar: 2 knoppar) och är vridna så att tänderna går i varandra utan att krocka.
 
 Saker som är förenklade jämfört med originalet:
@@ -61,6 +62,7 @@ viewer/               3D-visare med byggsteg (three.js + LDrawLoader)
 tools/check.py        kontroll av anslutningar, kollisioner och färger
 tools/render.mjs      rendering i headless Chromium
 tools/partlist.py     dellistor
+tools/buildplan.py    byggordning och fri väg in för varje del (används av visaren)
 tools/build_viewer.py packar modellen med alla LDraw-delar för visaren
 ```
 

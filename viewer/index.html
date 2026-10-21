@@ -51,6 +51,7 @@ h1 span { color: var(--deere); }
 .rail { min-height: 0; display: flex; flex-direction: column; gap: 10px; }
 .stepper { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 12px; display: grid; gap: 10px; }
 .stepline { display: flex; align-items: center; gap: 12px; }
+.badge.sub { background: var(--deere); color: var(--deere-ink); }
 .badge { font-family: var(--font-display); font-weight: 800; font-size: 34px; line-height: 1; min-width: 64px; text-align: center; padding: 6px 8px 4px;
   background: var(--decal); color: var(--decal-ink); border-radius: 4px; font-variant-numeric: tabular-nums; }
 .stepinfo { min-width: 0; }
@@ -119,19 +120,14 @@ input[type=range] { width: 100%; accent-color: var(--deere); }
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/" } }
 </script>
-<script>window.PARTDATA = {"names": {"3702": "Technic Brick 1 x 8 [7 Pin Holes]", "3004": "Brick 1 x 2", "3033": "Plate 6 x 10", "3030": "Plate 4 x 10", "3832": "Plate 2 x 10", "3020": "Plate 2 x 4", "3710": "Plate 1 x 4", "3035": "Plate 4 x 8", "15573": "Plate Special 1 x 2 with 1 Stud with Groove and Inside Stud Holder (Jumper)", "32073": "Technic Axle 5", "3713": "Technic Bush", "32123b": "Technic Bush 1/2 Smooth with Axle Hole Semi-Reduced", "56145": "Wheel 30.4 x 20 without Pinholes, with Reinforced Rim", "55976": "Tyre 56 x 26 Balloon", "3028": "Plate 6 x 12", "2445": "Plate 2 x 12", "3666": "Plate 1 x 6", "3024": "Plate 1 x 1", "4477": "Plate 1 x 10", "3623": "Plate 1 x 3", "3958": "Plate 6 x 6", "4162": "Tile 1 x 8 with Groove", "2431": "Tile 1 x 4 with Groove", "87079": "Tile 2 x 4 with Groove", "3069b": "Tile 1 x 2 with Groove", "3070b": "Tile 1 x 1 with Groove", "3032": "Plate 4 x 6", "6111": "Brick 1 x 10", "3005": "Brick 1 x 1", "3298": "Slope 33° 3 x 2", "4286": "Slope 33° 3 x 1", "3040b": "Slope 45° 2 x 1 with Bottom Pin", "63864": "Tile 1 x 3", "3023": "Plate 1 x 2", "32064a": "Technic Brick 1 x 2 with Axle Hole Type 1 [+ Opening] and Bottom Pin", "32062": "Technic Axle 2 Notched", "32140": "Technic Beam 2 x 4 L-Shape Thick", "61332": "Technic Pin with Friction Ridges Lengthwise with No Center Slots", "60484": "Technic Beam 3 x 3 T-Shape Thick", "32278": "Technic Beam 1 x 15 Thick", "32526": "Technic Beam 3 x 5 L-Shape Thick", "6536": "Technic Axle and Pin Connector Perpendicular", "3705": "Technic Axle 4", "55981": "Wheel 18 x 14 with Pin Hole, Fake Bolts and Shallow Spokes", "58090": "Tyre 30.4 x 14 VR Solid", "3706": "Technic Axle 6", "3941": "Brick Round 2 x 2 with Axle Hole", "15535": "Tile Round 2 x 2 with Hole", "32001": "Technic Plate 2 x 6 [5 Holes]", "3738": "Technic Plate 2 x 8 [7 Holes]", "30565": "Plate Round Corner 4 x 4", "3034": "Plate 2 x 8", "3460": "Plate 1 x 8", "3008": "Brick 1 x 8", "3010": "Brick 1 x 4", "3031": "Plate 4 x 4", "11477": "Slope Curved 2 x 1 No Studs [1/2 Bow]", "6636": "Tile 1 x 6 with Groove", "26603": "Tile 2 x 3", "3068b": "Tile 2 x 2 with Groove", "32124": "Technic Plate 1 x 5 with Smooth Ends, 4 Studs and Centre Axle Hole", "87083": "Technic Axle 4 with Stop", "3648b": "Technic Gear 24 Tooth [New Style with Single Axle Hole]", "10928": "Technic Gear 8 Tooth [Reinforced]", "32072": "Technic Knob Wheel", "3029": "Plate 4 x 12", "3009": "Brick 1 x 6", "3007": "Brick 2 x 8", "3700": "Technic Brick 1 x 2 [1 Pin Hole]", "3622": "Brick 1 x 3", "3002": "Brick 2 x 3", "3021": "Plate 2 x 3", "98138": "Tile Round 1 x 1", "2432": "Tile Special 1 x 2 with Handle", "2456": "Brick 2 x 6", "11211": "Brick Special 1 x 2 with 2 Studs on 1 Side", "54200": "Slope 30° 1 x 1 x 2/3 (Cheese Slope)", "14769": "Tile Round 2 x 2 with Bottom Stud Holder", "42135": "Technic Axle Connector with Axle Hole [Reinforced]", "3707": "Technic Axle 8", "32014": "Technic Axle and Pin Connector Angled #6 - 90°", "59443": "Technic Axle Connector Smooth [with x Hole + Orientation]"}, "colors": {"0": ["Svart", "#1B2A34"], "2": ["Grön", "#00852B"], "14": ["Gul", "#FAC80A"], "25": ["Orange", "#D67923"], "71": ["Ljus blågrå", "#969696"], "72": ["Mörk blågrå", "#646464"]}};</script>
+<script>window.PARTDATA = {"names":{"3702":"Technic Brick 1 x 8 [7 Pin Holes]","3004":"Brick 1 x 2","3033":"Plate 6 x 10","3030":"Plate 4 x 10","3832":"Plate 2 x 10","3020":"Plate 2 x 4","3710":"Plate 1 x 4","3035":"Plate 4 x 8","15573":"Plate Special 1 x 2 with 1 Stud with Groove and Inside Stud Holder (Jumper)","32073":"Technic Axle 5","3713":"Technic Bush","32123b":"Technic Bush 1/2 Smooth with Axle Hole Semi-Reduced","56145":"Wheel 30.4 x 20 without Pinholes, with Reinforced Rim","55976":"Tyre 56 x 26 Balloon","3028":"Plate 6 x 12","2445":"Plate 2 x 12","3666":"Plate 1 x 6","3024":"Plate 1 x 1","4477":"Plate 1 x 10","3623":"Plate 1 x 3","3958":"Plate 6 x 6","4162":"Tile 1 x 8 with Groove","2431":"Tile 1 x 4 with Groove","87079":"Tile 2 x 4 with Groove","3069b":"Tile 1 x 2 with Groove","3070b":"Tile 1 x 1 with Groove","3032":"Plate 4 x 6","6111":"Brick 1 x 10","3005":"Brick 1 x 1","3298":"Slope 33° 3 x 2","4286":"Slope 33° 3 x 1","3040b":"Slope 45° 2 x 1 with Bottom Pin","63864":"Tile 1 x 3","3023":"Plate 1 x 2","32064a":"Technic Brick 1 x 2 with Axle Hole Type 1 [+ Opening] and Bottom Pin","32062":"Technic Axle 2 Notched","32140":"Technic Beam 2 x 4 L-Shape Thick","61332":"Technic Pin with Friction Ridges Lengthwise with No Center Slots","60484":"Technic Beam 3 x 3 T-Shape Thick","32278":"Technic Beam 1 x 15 Thick","32526":"Technic Beam 3 x 5 L-Shape Thick","6536":"Technic Axle and Pin Connector Perpendicular","3705":"Technic Axle 4","55981":"Wheel 18 x 14 with Pin Hole, Fake Bolts and Shallow Spokes","58090":"Tyre 30.4 x 14 VR Solid","3706":"Technic Axle 6","3941":"Brick Round 2 x 2 with Axle Hole","15535":"Tile Round 2 x 2 with Hole","32001":"Technic Plate 2 x 6 [5 Holes]","3738":"Technic Plate 2 x 8 [7 Holes]","30565":"Plate Round Corner 4 x 4","3034":"Plate 2 x 8","3460":"Plate 1 x 8","3008":"Brick 1 x 8","3010":"Brick 1 x 4","3031":"Plate 4 x 4","11477":"Slope Curved 2 x 1 No Studs [1/2 Bow]","6636":"Tile 1 x 6 with Groove","26603":"Tile 2 x 3","3068b":"Tile 2 x 2 with Groove","87083":"Technic Axle 4 with Stop","32124":"Technic Plate 1 x 5 with Smooth Ends, 4 Studs and Centre Axle Hole","3648b":"Technic Gear 24 Tooth [New Style with Single Axle Hole]","10928":"Technic Gear 8 Tooth [Reinforced]","32072":"Technic Knob Wheel","3029":"Plate 4 x 12","3009":"Brick 1 x 6","3007":"Brick 2 x 8","3700":"Technic Brick 1 x 2 [1 Pin Hole]","3622":"Brick 1 x 3","3002":"Brick 2 x 3","3021":"Plate 2 x 3","98138":"Tile Round 1 x 1","2432":"Tile Special 1 x 2 with Handle","2456":"Brick 2 x 6","11211":"Brick Special 1 x 2 with 2 Studs on 1 Side","14769":"Tile Round 2 x 2 with Bottom Stud Holder","54200":"Slope 30° 1 x 1 x 2/3 (Cheese Slope)","42135":"Technic Axle Connector with Axle Hole [Reinforced]","3707":"Technic Axle 8","32014":"Technic Axle and Pin Connector Angled #6 - 90°","59443":"Technic Axle Connector Smooth [with x Hole + Orientation]"},"colors":{"0":["Svart","#1B2A34"],"2":["Grön","#00852B"],"14":["Gul","#FAC80A"],"25":["Orange","#D67923"],"71":["Ljus blågrå","#969696"],"72":["Mörk blågrå","#646464"]},"plan":{"parts":[["3702",0,0,0.0,-1.0,0.0,100],["3004",0,1,0.0,-1.0,0.0,100],["3702",0,2,0.0,-1.0,0.0,100],["3004",0,3,0.0,-1.0,0.0,100],["3702",0,4,0.0,-1.0,0.0,100],["3004",0,5,0.0,-1.0,0.0,100],["3702",0,6,0.0,-1.0,0.0,100],["3004",0,7,0.0,-1.0,0.0,100],["3033",1,0,0.0,-1.0,0.0,100],["3030",1,1,0.0,-1.0,0.0,100],["3033",2,0,0.0,-1.0,0.0,100],["3832",2,1,0.0,-1.0,0.0,100],["3033",2,2,0.0,-1.0,0.0,100],["3020",2,3,0.0,-1.0,0.0,100],["3710",2,4,0.0,-1.0,0.0,100],["3020",2,5,0.0,-1.0,0.0,100],["3710",2,6,0.0,-1.0,0.0,100],["3035",3,0,0.0,-1.0,0.0,100],["3035",3,1,0.0,-1.0,0.0,100],["15573",3,2,0.0,-1.0,0.0,100],["15573",3,3,0.0,-1.0,0.0,100],["15573",3,4,0.0,-1.0,0.0,100],["15573",3,5,0.0,-1.0,0.0,100],["15573",3,6,0.0,-1.0,0.0,100],["15573",3,7,0.0,-1.0,0.0,100],["15573",3,8,0.0,-1.0,0.0,100],["15573",3,9,0.0,-1.0,0.0,100],["15573",4,0,0.0,-1.0,0.0,100],["15573",4,1,0.0,-1.0,0.0,100],["15573",4,2,0.0,-1.0,0.0,100],["15573",4,3,0.0,-1.0,0.0,100],["15573",4,4,0.0,-1.0,0.0,100],["15573",4,5,0.0,-1.0,0.0,100],["15573",4,6,0.0,-1.0,0.0,100],["15573",4,7,0.0,-1.0,0.0,100],["15573",4,8,0.0,-1.0,0.0,100],["15573",4,9,0.0,-1.0,0.0,100],["15573",5,0,0.0,-1.0,0.0,100],["15573",5,1,0.0,-1.0,0.0,100],["15573",5,2,0.0,-1.0,0.0,100],["15573",5,3,0.0,-1.0,0.0,100],["15573",5,4,0.0,-1.0,0.0,100],["15573",5,5,0.0,-1.0,0.0,100],["15573",5,6,0.0,-1.0,0.0,100],["15573",5,7,0.0,-1.0,0.0,100],["15573",5,8,0.0,-1.0,0.0,100],["15573",5,9,0.0,-1.0,0.0,100],["15573",6,0,0.0,-1.0,0.0,100],["15573",6,1,0.0,-1.0,0.0,100],["15573",6,2,0.0,-1.0,0.0,100],["15573",6,3,0.0,-1.0,0.0,100],["32073",7,2,1.0,0.0,0.0,100],["3713",7,1,0.0,1.0,0.0,100],["32123b",7,0,0.0,-1.0,0.0,100],["56145",8,0,1.0,0.0,0.0,100],["55976",8,1,1.0,0.0,0.0,100],["32073",9,2,-1.0,0.0,0.0,100],["3713",9,1,0.0,1.0,0.0,100],["32123b",9,0,0.0,-1.0,0.0,100],["56145",10,0,-1.0,0.0,0.0,100],["55976",10,1,-1.0,0.0,0.0,100],["3028",11,0,0.0,-1.0,0.0,100],["2445",11,1,0.0,-1.0,0.0,100],["3666",11,2,0.0,-1.0,0.0,100],["3033",11,3,0.0,-1.0,0.0,100],["3666",11,4,0.0,-1.0,0.0,100],["3024",11,5,0.0,-1.0,0.0,100],["3024",11,6,0.0,-1.0,0.0,100],["3710",11,7,0.0,-1.0,0.0,100],["3710",11,8,0.0,-1.0,0.0,100],["4477",11,9,0.0,-1.0,0.0,100],["3623",12,0,0.0,-1.0,0.0,100],["3958",13,0,0.0,1.0,0.0,100],["3666",13,1,0.0,1.0,0.0,100],["4162",14,0,0.0,-1.0,0.0,100],["4162",14,1,0.0,-1.0,0.0,100],["4162",14,2,0.0,-1.0,0.0,100],["4162",14,3,0.0,-1.0,0.0,100],["4162",14,4,0.0,-1.0,0.0,100],["4162",14,5,0.0,-1.0,0.0,100],["4162",14,6,0.0,-1.0,0.0,100],["4162",14,7,0.0,-1.0,0.0,100],["4162",14,8,0.0,-1.0,0.0,100],["4162",14,9,0.0,-1.0,0.0,100],["4162",15,0,0.0,-1.0,0.0,100],["4162",15,1,0.0,-1.0,0.0,100],["4162",15,2,0.0,-1.0,0.0,100],["2431",15,3,0.0,-1.0,0.0,100],["2431",15,4,0.0,-1.0,0.0,100],["4162",15,5,0.0,-1.0,0.0,100],["87079",15,6,0.0,-1.0,0.0,100],["2431",15,7,0.0,-1.0,0.0,100],["4162",15,8,0.0,-1.0,0.0,100],["4162",15,9,0.0,-1.0,0.0,100],["3069b",16,0,0.0,-1.0,0.0,100],["2431",16,1,0.0,-1.0,0.0,100],["3070b",16,2,0.0,-1.0,0.0,100],["3070b",16,3,0.0,-1.0,0.0,100],["3069b",16,4,0.0,-1.0,0.0,100],["3069b",16,5,0.0,-1.0,0.0,100],["3032",17,0,0.0,-1.0,0.0,100],["3710",17,1,0.0,-1.0,0.0,100],["3030",17,2,0.0,-1.0,0.0,100],["3710",17,3,0.0,-1.0,0.0,100],["4477",17,4,0.0,-1.0,0.0,100],["3024",17,5,0.0,-1.0,0.0,100],["6111",18,0,0.0,-1.0,0.0,100],["3005",18,1,0.0,-1.0,0.0,100],["3298",18,2,0.0,-1.0,0.0,100],["3298",18,3,0.0,-1.0,0.0,100],["4286",18,4,0.0,-1.0,0.0,100],["4286",18,5,0.0,-1.0,0.0,100],["4286",18,6,0.0,-1.0,0.0,100],["3298",18,7,0.0,-1.0,0.0,100],["3298",18,8,0.0,-1.0,0.0,100],["6111",19,0,0.0,-1.0,0.0,100],["3005",19,1,0.0,-1.0,0.0,100],["3040b",19,2,0.0,-1.0,0.0,100],["3040b",19,3,0.0,-1.0,0.0,100],["3040b",19,4,0.0,-1.0,0.0,100],["3040b",19,5,0.0,-1.0,0.0,100],["3040b",19,6,0.0,-1.0,0.0,100],["3040b",19,7,0.0,-1.0,0.0,100],["3040b",19,8,0.0,-1.0,0.0,100],["3040b",19,9,0.0,-1.0,0.0,100],["3040b",20,0,0.0,-1.0,0.0,100],["3040b",20,1,0.0,-1.0,0.0,100],["3040b",20,2,0.0,-1.0,0.0,100],["87079",20,3,0.0,-1.0,0.0,100],["87079",20,4,0.0,-1.0,0.0,100],["63864",20,5,0.0,-1.0,0.0,100],["63864",20,6,0.0,-1.0,0.0,100],["3023",21,0,0.0,-1.0,0.0,100],["32064a",21,1,0.0,-1.0,0.0,100],["32062",21,2,0.0,0.0,1.0,100],["32140",21,3,0.0,0.0,-1.0,100],["61332",21,4,0.0,0.0,-1.0,100],["61332",21,5,0.0,0.0,-1.0,100],["60484",21,6,0.0,0.0,-1.0,100],["32278",22,0,0.0,-1.0,0.0,100],["32278",22,1,0.0,-1.0,0.0,100],["32278",22,2,0.0,-1.0,0.0,100],["61332",23,0,0.0,-1.0,0.0,100],["61332",23,1,0.0,-1.0,0.0,100],["61332",23,2,0.0,-1.0,0.0,100],["61332",23,3,0.0,-1.0,0.0,100],["61332",23,4,0.0,-1.0,0.0,100],["61332",23,5,0.0,-1.0,0.0,100],["61332",23,6,0.0,-1.0,0.0,100],["61332",23,7,0.0,-1.0,0.0,100],["61332",23,8,0.0,-1.0,0.0,100],["61332",23,9,0.0,-1.0,0.0,100],["32526",24,0,0.0,-1.0,0.0,100],["32526",24,1,0.0,-1.0,0.0,100],["6536",26,1,0.0,1.0,0.0,100],["3705",26,3,1.0,0.0,0.0,100],["32140",26,2,0.0,1.0,0.0,100],["32140",26,0,0.0,-1.0,0.0,100],["32073",27,4,1.0,0.0,0.0,100],["55981",27,1,0.0,1.0,0.0,100],["58090",27,2,0.0,1.0,0.0,100],["32123b",27,3,0.0,1.0,0.0,100],["32123b",27,0,0.0,-1.0,0.0,100],["3706",28,0,0.0,-1.0,0.0,100],["32123b",28,4,0.0,1.0,0.0,24],["3941",28,1,0.0,-1.0,0.0,100],["3941",28,2,0.0,-1.0,0.0,100],["15535",28,3,0.0,-1.0,0.0,100],["6536",29,1,0.0,1.0,0.0,100],["3705",29,3,-1.0,0.0,0.0,100],["32140",29,0,0.0,-1.0,0.0,100],["32140",29,2,0.0,1.0,0.0,100],["32073",30,4,-1.0,0.0,0.0,100],["55981",30,1,0.0,1.0,0.0,100],["58090",30,2,0.0,1.0,0.0,100],["32123b",30,0,0.0,-1.0,0.0,100],["32123b",30,3,0.0,1.0,0.0,100],["3706",31,0,0.0,-1.0,0.0,100],["32123b",31,4,0.0,1.0,0.0,24],["3941",31,1,0.0,-1.0,0.0,100],["3941",31,2,0.0,-1.0,0.0,100],["15535",31,3,0.0,-1.0,0.0,100],["32001",32,0,0.0,-1.0,0.0,100],["32001",32,1,0.0,-1.0,0.0,100],["3738",32,2,0.0,-1.0,0.0,100],["32001",32,3,0.0,-1.0,0.0,100],["32001",32,4,0.0,-1.0,0.0,100],["30565",32,5,0.0,-1.0,0.0,100],["30565",32,6,0.0,-1.0,0.0,100],["3832",32,7,0.0,-1.0,0.0,100],["3666",32,8,0.0,-1.0,0.0,100],["3023",32,9,0.0,-1.0,0.0,100],["3023",33,0,0.0,-1.0,0.0,100],["3024",33,1,0.0,-1.0,0.0,100],["3666",33,2,0.0,-1.0,0.0,100],["3666",33,3,0.0,-1.0,0.0,100],["3666",33,4,0.0,-1.0,0.0,100],["3034",33,5,0.0,-1.0,0.0,100],["3460",33,6,0.0,-1.0,0.0,100],["3024",33,7,0.0,-1.0,0.0,100],["30565",34,1,0.0,1.0,0.0,100],["30565",34,2,0.0,1.0,0.0,100],["6111",34,0,0.0,-1.0,0.0,100],["6111",34,3,0.0,1.0,0.0,100],["3008",34,4,0.0,1.0,0.0,100],["3010",34,5,0.0,1.0,0.0,100],["3005",34,6,0.0,1.0,0.0,100],["3005",34,7,0.0,1.0,0.0,100],["30565",34,8,0.0,1.0,0.0,100],["30565",34,9,0.0,1.0,0.0,100],["30565",35,0,0.0,1.0,0.0,100],["30565",35,1,0.0,1.0,0.0,100],["30565",35,2,0.0,1.0,0.0,100],["30565",35,3,0.0,1.0,0.0,100],["30565",35,4,0.0,1.0,0.0,100],["30565",35,5,0.0,1.0,0.0,100],["30565",35,6,0.0,1.0,0.0,100],["30565",35,7,0.0,1.0,0.0,100],["6111",36,0,0.0,1.0,0.0,100],["6111",36,1,0.0,1.0,0.0,100],["3008",36,2,0.0,1.0,0.0,100],["3010",36,3,0.0,1.0,0.0,100],["3005",36,4,0.0,1.0,0.0,100],["3005",36,5,0.0,1.0,0.0,100],["3031",37,0,0.0,1.0,0.0,100],["3298",37,1,0.0,-1.0,0.0,100],["3298",37,2,0.0,-1.0,0.0,100],["3623",37,3,0.0,1.0,0.0,100],["3623",37,4,0.0,1.0,0.0,100],["3023",37,5,0.0,1.0,0.0,100],["3623",37,6,0.0,1.0,0.0,100],["3623",37,7,0.0,1.0,0.0,100],["3023",37,8,0.0,1.0,0.0,100],["11477",38,0,0.0,-1.0,0.0,100],["11477",38,1,0.0,-1.0,0.0,100],["11477",38,2,0.0,-1.0,0.0,100],["11477",38,3,0.0,-1.0,0.0,100],["11477",38,4,0.0,-1.0,0.0,100],["11477",38,5,0.0,-1.0,0.0,100],["11477",38,6,0.0,-1.0,0.0,100],["11477",38,7,0.0,-1.0,0.0,100],["11477",38,8,0.0,-1.0,0.0,100],["11477",38,9,0.0,-1.0,0.0,100],["4162",39,0,0.0,-1.0,0.0,100],["2431",39,1,0.0,-1.0,0.0,100],["87079",39,2,0.0,-1.0,0.0,100],["87079",39,3,0.0,-1.0,0.0,100],["4162",39,4,0.0,-1.0,0.0,100],["4162",39,5,0.0,-1.0,0.0,100],["63864",39,6,0.0,-1.0,0.0,100],["6636",39,7,0.0,-1.0,0.0,100],["26603",39,8,0.0,-1.0,0.0,100],["6636",39,9,0.0,-1.0,0.0,100],["3068b",40,0,0.0,-1.0,0.0,100],["6636",40,1,0.0,-1.0,0.0,100],["3070b",40,2,0.0,-1.0,0.0,100],["2431",40,3,0.0,-1.0,0.0,100],["26603",40,4,0.0,-1.0,0.0,100],["26603",40,5,0.0,-1.0,0.0,100],["87079",40,6,0.0,-1.0,0.0,100],["3069b",40,7,0.0,-1.0,0.0,100],["63864",40,8,0.0,-1.0,0.0,100],["3070b",40,9,0.0,-1.0,0.0,100],["4162",41,0,0.0,-1.0,0.0,100],["15535",41,1,0.0,-1.0,0.0,100],["15535",41,2,0.0,-1.0,0.0,100],["15535",41,3,0.0,-1.0,0.0,100],["15535",41,4,0.0,-1.0,0.0,100],["15535",41,5,0.0,-1.0,0.0,100],["15535",41,6,0.0,-1.0,0.0,100],["3705",42,1,0.0,-1.0,0.0,100],["3705",42,2,0.0,-1.0,0.0,100],["32062",42,3,0.0,-1.0,0.0,100],["32062",42,4,0.0,-1.0,0.0,100],["87083",42,0,0.0,-1.0,0.0,100],["32123b",42,5,0.0,1.0,0.0,100],["32123b",42,6,0.0,1.0,0.0,100],["3713",42,7,0.0,1.0,0.0,100],["32124",42,8,0.0,1.0,0.0,100],["32124",42,9,0.0,1.0,0.0,100],["32123b",43,0,0.0,1.0,0.0,100],["32123b",43,1,0.0,1.0,0.0,100],["32123b",43,2,0.0,1.0,0.0,100],["32124",43,3,0.0,1.0,0.0,100],["32123b",44,0,0.0,-1.0,0.0,100],["32123b",44,1,0.0,-1.0,0.0,100],["32123b",44,2,0.0,-1.0,0.0,100],["32123b",44,3,0.0,-1.0,0.0,100],["32123b",44,4,0.0,-1.0,0.0,100],["32123b",44,5,0.0,-1.0,0.0,100],["3648b",45,0,0.0,-1.0,0.0,100],["10928",45,1,0.0,-1.0,0.0,100],["3648b",45,2,0.0,-1.0,0.0,100],["3648b",45,3,0.0,-1.0,0.0,100],["3648b",45,4,0.0,-1.0,0.0,100],["10928",45,5,0.0,-1.0,0.0,100],["32123b",47,4,0.0,-1.0,0.0,100],["32073",47,0,0.0,-1.0,0.0,100],["32123b",47,5,0.0,-1.0,0.0,100],["32073",47,1,0.0,-1.0,0.0,100],["32072",47,7,0.0,-1.0,0.0,100],["3706",47,3,0.0,-1.0,0.0,100],["32123b",47,6,0.0,-1.0,0.0,100],["32073",47,2,0.0,-1.0,0.0,100],["3713",48,0,0.0,1.0,0.0,100],["3713",48,1,0.0,1.0,0.0,100],["3713",48,2,0.0,1.0,0.0,100],["3713",48,3,0.0,1.0,0.0,100],["6111",49,0,0.0,-1.0,0.0,100],["6111",49,4,0.0,-1.0,0.0,100],["6111",49,1,0.0,-1.0,0.0,100],["6111",49,5,0.0,-1.0,0.0,100],["3008",49,2,0.0,-1.0,0.0,100],["3008",49,3,0.0,-1.0,0.0,100],["3008",49,6,0.0,-1.0,0.0,100],["3008",49,7,0.0,-1.0,0.0,100],["3028",50,0,0.0,-1.0,0.0,100],["3832",50,1,0.0,-1.0,0.0,100],["3029",50,2,0.0,-1.0,0.0,100],["3023",51,8,0.0,1.0,0.0,100],["3023",51,9,0.0,1.0,0.0,100],["3004",51,6,0.0,1.0,0.0,100],["3004",51,7,0.0,1.0,0.0,100],["3009",51,0,0.0,-1.0,0.0,100],["3005",51,1,0.0,-1.0,0.0,100],["3007",51,2,0.0,-1.0,0.0,100],["3005",51,3,0.0,-1.0,0.0,100],["3700",51,4,0.0,-1.0,0.0,100],["3005",51,5,0.0,-1.0,0.0,100],["3622",52,0,0.0,-1.0,0.0,100],["3009",52,1,0.0,-1.0,0.0,100],["3005",52,2,0.0,-1.0,0.0,100],["3007",52,3,0.0,-1.0,0.0,100],["3005",52,4,0.0,-1.0,0.0,100],["3700",52,5,0.0,-1.0,0.0,100],["3005",52,6,0.0,-1.0,0.0,100],["3622",52,7,0.0,-1.0,0.0,100],["3666",52,8,0.0,-1.0,0.0,100],["3024",52,9,0.0,-1.0,0.0,100],["3007",53,6,0.0,-1.0,0.0,100],["3024",53,0,0.0,-1.0,0.0,100],["3002",53,7,0.0,-1.0,0.0,100],["3666",53,1,0.0,-1.0,0.0,100],["3024",53,2,0.0,-1.0,0.0,100],["3007",53,8,0.0,-1.0,0.0,100],["3024",53,3,0.0,-1.0,0.0,100],["3002",53,9,0.0,-1.0,0.0,100],["3666",53,4,0.0,-1.0,0.0,100],["3024",53,5,0.0,-1.0,0.0,100],["3024",54,0,0.0,-1.0,0.0,100],["3666",54,1,0.0,-1.0,0.0,100],["3024",54,2,0.0,-1.0,0.0,100],["3024",54,3,0.0,-1.0,0.0,100],["3666",54,4,0.0,-1.0,0.0,100],["3024",54,5,0.0,-1.0,0.0,100],["3024",54,6,0.0,-1.0,0.0,100],["3666",54,7,0.0,-1.0,0.0,100],["3024",54,8,0.0,-1.0,0.0,100],["3024",54,9,0.0,-1.0,0.0,100],["3666",55,0,0.0,-1.0,0.0,100],["3024",55,1,0.0,-1.0,0.0,100],["3034",55,2,0.0,-1.0,0.0,100],["3024",55,3,0.0,-1.0,0.0,100],["3021",55,4,0.0,-1.0,0.0,100],["3666",55,5,0.0,-1.0,0.0,100],["3024",55,6,0.0,-1.0,0.0,100],["3034",55,7,0.0,-1.0,0.0,100],["3024",55,8,0.0,-1.0,0.0,100],["3021",55,9,0.0,-1.0,0.0,100],["3007",56,0,0.0,-1.0,0.0,100],["3007",56,1,0.0,-1.0,0.0,100],["3034",56,2,0.0,-1.0,0.0,100],["3832",57,0,0.0,-1.0,0.0,100],["4477",57,1,0.0,-1.0,0.0,100],["3832",57,2,0.0,-1.0,0.0,100],["4477",57,3,0.0,-1.0,0.0,100],["3034",57,4,0.0,-1.0,0.0,100],["4477",57,9,0.0,-1.0,0.0,100],["11477",57,5,0.0,-1.0,0.0,100],["11477",57,6,0.0,-1.0,0.0,100],["11477",57,7,0.0,-1.0,0.0,100],["11477",57,8,0.0,-1.0,0.0,100],["11477",58,0,0.0,-1.0,0.0,100],["11477",58,1,0.0,-1.0,0.0,100],["11477",58,2,0.0,-1.0,0.0,100],["11477",58,3,0.0,-1.0,0.0,100],["11477",58,4,0.0,-1.0,0.0,100],["11477",58,5,0.0,-1.0,0.0,100],["4477",58,9,0.0,-1.0,0.0,100],["11477",58,6,0.0,-1.0,0.0,100],["11477",58,7,0.0,-1.0,0.0,100],["11477",58,8,0.0,-1.0,0.0,100],["11477",59,0,0.0,-1.0,0.0,100],["11477",59,1,0.0,-1.0,0.0,100],["11477",59,2,0.0,-1.0,0.0,100],["11477",59,3,0.0,-1.0,0.0,100],["11477",59,4,0.0,-1.0,0.0,100],["11477",59,5,0.0,-1.0,0.0,100],["11477",59,6,0.0,-1.0,0.0,100],["3460",59,7,0.0,-1.0,0.0,100],["11477",59,8,0.0,-1.0,0.0,100],["11477",59,9,0.0,-1.0,0.0,100],["11477",60,0,0.0,-1.0,0.0,100],["11477",60,1,0.0,-1.0,0.0,100],["11477",60,2,0.0,-1.0,0.0,100],["11477",60,3,0.0,-1.0,0.0,100],["11477",60,4,0.0,-1.0,0.0,100],["11477",60,5,0.0,-1.0,0.0,100],["4162",60,6,0.0,-1.0,0.0,100],["2431",60,7,0.0,-1.0,0.0,100],["3070b",60,8,0.0,-1.0,0.0,100],["2431",60,9,0.0,-1.0,0.0,100],["98138",61,1,0.0,-1.0,0.0,100],["2432",61,2,0.0,-1.0,0.0,100],["3008",61,0,0.0,-1.0,0.0,100],["2456",63,0,0.0,-1.0,0.0,100],["2456",63,1,0.0,-1.0,0.0,100],["2456",63,2,0.0,-1.0,0.0,100],["3009",63,3,0.0,-1.0,0.0,100],["3034",64,0,0.0,-1.0,0.0,100],["3034",64,1,0.0,-1.0,0.0,100],["3034",64,2,0.0,-1.0,0.0,100],["3034",64,3,0.0,-1.0,0.0,100],["3007",65,8,0.0,-1.0,0.0,100],["3007",65,9,0.0,-1.0,0.0,100],["3034",65,0,0.0,-1.0,0.0,100],["3034",65,1,0.0,-1.0,0.0,100],["11477",65,2,0.0,-1.0,0.0,100],["11477",65,3,0.0,-1.0,0.0,100],["11477",65,4,0.0,-1.0,0.0,100],["11477",65,5,0.0,-1.0,0.0,100],["11477",65,6,0.0,-1.0,0.0,100],["11477",65,7,0.0,-1.0,0.0,100],["11477",66,0,0.0,-1.0,0.0,100],["11477",66,1,0.0,-1.0,0.0,100],["87079",66,6,0.0,-1.0,0.0,100],["87079",66,7,0.0,-1.0,0.0,100],["3070b",66,8,0.0,-1.0,0.0,100],["3070b",66,9,0.0,-1.0,0.0,100],["11477",66,2,0.0,-1.0,0.0,100],["11477",66,3,0.0,-1.0,0.0,100],["11477",66,4,0.0,-1.0,0.0,100],["11477",66,5,0.0,-1.0,0.0,100],["11477",67,0,0.0,-1.0,0.0,100],["11477",67,1,0.0,-1.0,0.0,100],["3008",68,0,0.0,-1.0,0.0,100],["3008",68,1,0.0,-1.0,0.0,100],["3009",68,2,0.0,-1.0,0.0,100],["3008",68,3,0.0,-1.0,0.0,100],["3004",68,4,0.0,-1.0,0.0,100],["3004",68,5,0.0,-1.0,0.0,100],["3009",68,6,0.0,-1.0,0.0,100],["3008",68,7,0.0,-1.0,0.0,100],["3004",68,8,0.0,-1.0,0.0,100],["3004",68,9,0.0,-1.0,0.0,100],["3004",69,0,0.0,-1.0,0.0,100],["11211",69,1,0.0,-1.0,0.0,100],["3004",69,2,0.0,-1.0,0.0,100],["3008",69,3,0.0,-1.0,0.0,100],["3004",69,4,0.0,-1.0,0.0,100],["3004",69,5,0.0,-1.0,0.0,100],["14769",69,6,0.0,-1.0,0.0,100],["3008",69,8,0.0,-1.0,0.0,100],["3008",69,9,0.0,-1.0,0.0,100],["54200",69,7,0.0,-1.0,0.0,100],["54200",70,0,0.0,-1.0,0.0,100],["3034",70,1,0.0,-1.0,0.0,100],["3020",70,6,0.0,-1.0,0.0,100],["11477",70,2,0.0,-1.0,0.0,100],["11477",70,3,0.0,-1.0,0.0,100],["11477",70,4,0.0,-1.0,0.0,100],["11477",70,5,0.0,-1.0,0.0,100],["87079",70,7,0.0,-1.0,0.0,100],["32062",72,0,0.0,0.0,-1.0,100],["42135",72,1,0.0,0.0,-1.0,60],["3707",72,2,0.5,-0.866,-0.0,100],["32014",72,3,0.5,-0.866,0.0,100],["3705",72,4,-0.866,-0.5,-0.0,100],["59443",72,5,-0.866,-0.5,-0.0,100],["32062",73,0,0.0,0.0,-1.0,100],["42135",73,1,0.0,0.0,-1.0,100],["3707",73,2,-0.5,-0.866,-0.0,100],["32014",73,3,-0.5,-0.866,0.0,100],["3705",73,4,0.866,-0.5,0.0,100],["59443",73,5,0.866,-0.5,0.0,100]],"steps":[{"ctx":"main","section":"rear_frame","mounts":[]},{"ctx":"main","section":"rear_frame","mounts":[]},{"ctx":"main","section":"rear_frame","mounts":[]},{"ctx":"main","section":"rear_frame","mounts":[]},{"ctx":"main","section":"rear_frame","mounts":[]},{"ctx":"main","section":"rear_frame","mounts":[]},{"ctx":"main","section":"rear_frame","mounts":[]},{"ctx":"main","section":"rear_wheels","mounts":[]},{"ctx":"main","section":"rear_wheels","mounts":[]},{"ctx":"main","section":"rear_wheels","mounts":[]},{"ctx":"main","section":"rear_wheels","mounts":[]},{"ctx":"main","section":"floor","mounts":[]},{"ctx":"main","section":"floor","mounts":[]},{"ctx":"main","section":"floor","mounts":[]},{"ctx":"main","section":"floor","mounts":[]},{"ctx":"main","section":"floor","mounts":[]},{"ctx":"main","section":"floor","mounts":[]},{"ctx":"main","section":"floor","mounts":[]},{"ctx":"main","section":"floor","mounts":[]},{"ctx":"main","section":"floor","mounts":[]},{"ctx":"main","section":"floor","mounts":[]},{"ctx":"main","section":"floor","mounts":[]},{"ctx":"front_frame.ldr","section":"front_frame","mounts":[]},{"ctx":"front_frame.ldr","section":"front_frame","mounts":[]},{"ctx":"front_frame.ldr","section":"front_frame","mounts":[]},{"ctx":"main","section":"front_frame","mounts":[["front_frame.ldr",0,-1,0,375]]},{"ctx":"main","section":"casters","mounts":[]},{"ctx":"main","section":"casters","mounts":[]},{"ctx":"main","section":"casters","mounts":[]},{"ctx":"main","section":"casters","mounts":[]},{"ctx":"main","section":"casters","mounts":[]},{"ctx":"main","section":"casters","mounts":[]},{"ctx":"deck.ldr","section":"deck","mounts":[]},{"ctx":"deck.ldr","section":"deck","mounts":[]},{"ctx":"deck.ldr","section":"deck","mounts":[]},{"ctx":"deck.ldr","section":"deck","mounts":[]},{"ctx":"deck.ldr","section":"deck","mounts":[]},{"ctx":"deck.ldr","section":"deck","mounts":[]},{"ctx":"deck.ldr","section":"deck","mounts":[]},{"ctx":"deck.ldr","section":"deck","mounts":[]},{"ctx":"deck.ldr","section":"deck","mounts":[]},{"ctx":"deck.ldr","section":"deck","mounts":[]},{"ctx":"deck.ldr","section":"deck","mounts":[]},{"ctx":"deck.ldr","section":"deck","mounts":[]},{"ctx":"deck.ldr","section":"deck","mounts":[]},{"ctx":"deck.ldr","section":"deck","mounts":[]},{"ctx":"main","section":"deck","mounts":[["deck.ldr",0,1,0,477]]},{"ctx":"main","section":"deck_hangers","mounts":[]},{"ctx":"main","section":"deck_hangers","mounts":[]},{"ctx":"body.ldr","section":"body","mounts":[]},{"ctx":"body.ldr","section":"body","mounts":[]},{"ctx":"body.ldr","section":"body","mounts":[]},{"ctx":"body.ldr","section":"body","mounts":[]},{"ctx":"body.ldr","section":"body","mounts":[]},{"ctx":"body.ldr","section":"body","mounts":[]},{"ctx":"body.ldr","section":"body","mounts":[]},{"ctx":"body.ldr","section":"body","mounts":[]},{"ctx":"body.ldr","section":"body","mounts":[]},{"ctx":"body.ldr","section":"body","mounts":[]},{"ctx":"body.ldr","section":"body","mounts":[]},{"ctx":"body.ldr","section":"body","mounts":[]},{"ctx":"body.ldr","section":"body","mounts":[]},{"ctx":"main","section":"body","mounts":[["body.ldr",0,-1,0,337]]},{"ctx":"seat.ldr","section":"seat","mounts":[]},{"ctx":"seat.ldr","section":"seat","mounts":[]},{"ctx":"seat.ldr","section":"seat","mounts":[]},{"ctx":"seat.ldr","section":"seat","mounts":[]},{"ctx":"seat.ldr","section":"seat","mounts":[]},{"ctx":"seat.ldr","section":"seat","mounts":[]},{"ctx":"seat.ldr","section":"seat","mounts":[]},{"ctx":"seat.ldr","section":"seat","mounts":[]},{"ctx":"main","section":"seat","mounts":[["seat.ldr",0,-1,0,233]]},{"ctx":"main","section":"lap_bars","mounts":[]},{"ctx":"main","section":"lap_bars","mounts":[]}],"sections":{"rear_frame":"Bakram med hjullager","rear_wheels":"Drivhjul","floor":"Golv, fotstöd och lyftpedal","front_frame":"Främre ram och tvärbalk","casters":"Länkhjul","deck":"Klippaggregat med knivar","deck_hangers":"Upphängning och knopp","body":"Kaross och stänkskärmar","seat":"Förarstol","lap_bars":"Styrspakar"}}};</script>
 <script type="module">
 import * as THREE from 'three';
 import { LDrawLoader } from 'three/addons/loaders/LDrawLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
-const SUBNAMES = {
-  'rear_frame.ldr': 'Bakram med hjullager', 'rear_wheels.ldr': 'Drivhjul', 'floor.ldr': 'Golv, fotstöd och lyftpedal',
-  'front_frame.ldr': 'Främre ram och tvärbalk', 'casters.ldr': 'Länkhjul', 'deck.ldr': 'Klippaggregat 42"',
-  'body.ldr': 'Kaross och stänkskärmar', 'seat.ldr': 'Förarstol', 'lap_bars.ldr': 'Styrspakar', 'z315e.ldr': 'Montering'
-};
-const D = window.PARTDATA;
+const D = window.PARTDATA, P = D.plan;
 const stage = document.getElementById('stage');
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -156,46 +152,67 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => scen
 new MutationObserver(() => scene.background = new THREE.Color(themeBg())).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 scene.background = new THREE.Color(themeBg());
 
-let model, parts = [], nSteps = 0, step = 0, tab = 'step', anim = [];
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const PART_MS = 480, MOUNT_MS = 1100, CAM_MS = 700;
 
 const loader = new LDrawLoader();
 loader.setPartsLibraryPath('./');
 await loader.preloadMaterials('LDConfig.ldr');
-model = await loader.loadAsync('z315e_packed.mpd');
+const model = await loader.loadAsync('z315e_packed.mpd');
 model.rotation.x = Math.PI;
 scene.add(model);
 model.updateMatrixWorld(true);
 
-// collect parts (groups whose file name is a library part) with their step and submodel
+// Parts in file order, matched with the build plan (same order, computed when the viewer was built).
+// Positions are LDraw coordinates in the part's parent: the model itself, or a sub-assembly placed at the origin.
+const parts = [], subGroups = new Map();
 model.traverse(g => {
   if (!g.isGroup || g === model) return;
   const f = (g.userData.fileName || '').toLowerCase();
-  if (g.userData.type === 'Part' || /^[0-9a-z]+\.dat$/.test(f)) {
-    let sub = g.parent, subName = '';
-    while (sub && sub !== model) { if ((sub.userData.fileName || '').endsWith('.ldr')) { subName = sub.userData.fileName; break; } sub = sub.parent; }
-    parts.push({ g, step: g.userData.buildingStep, part: f.replace('.dat', ''), color: String(g.userData.colorCode), sub: subName, y0: g.position.y });
-  }
+  if (g.userData.type === 'Part' || /^[0-9a-z]+\.dat$/.test(f)) parts.push({ g, part: f.replace('.dat', ''), color: String(g.userData.colorCode), home: g.position.clone() });
+  else if (f.endsWith('.ldr')) subGroups.set(f, g);
 });
-nSteps = model.userData.numBuildingSteps;
-const used = [...new Set(parts.map(p => p.step))].sort((a, b) => a - b);
-const stepIndex = new Map(used.map((s, i) => [s, i + 1]));
+if (parts.length !== P.parts.length || parts.some((p, i) => p.part !== P.parts[i][0])) console.error('Byggplanen stämmer inte med modellen');
+parts.forEach((p, i) => {
+  const [, st, k, dx, dy, dz, travel] = P.parts[i];
+  Object.assign(p, { st, k, travel, dir: new THREE.Vector3(dx, dy, dz), ctx: P.steps[st].ctx.toLowerCase() });
+});
+const N = P.steps.length;
+const mountStep = {};
+P.steps.forEach((S, i) => S.mounts.forEach(([sub]) => mountStep[sub.toLowerCase()] = i));
+
 document.getElementById('nparts').textContent = parts.length;
-document.getElementById('nsteps').textContent = used.length;
+document.getElementById('nsteps').textContent = N;
 const slider = document.getElementById('slider');
-slider.max = used.length; slider.value = used.length;
+slider.max = N; slider.value = N;
 document.getElementById('loading').hidden = true;
 
-const box = new THREE.Box3().setFromObject(model);
-const center = box.getCenter(new THREE.Vector3());
-const radius = box.getSize(new THREE.Vector3()).length() / 2;
-controls.target.copy(center);
-const dir = new THREE.Vector3(-Math.sin(1.05), 0.36, Math.cos(1.05)).normalize();
+// camera: frames what is shown in the step (the growing model, or the sub-assembly being built) and
+// turns to the underside when the step's parts go on from below
+function boxOf(list) { const b = new THREE.Box3(); for (const p of list) b.expandByObject(p.g); return b; }
+function framing(box, zoomOut) {
+  const c = box.getCenter(new THREE.Vector3()), r = Math.max(60, box.getSize(new THREE.Vector3()).length() / 2);
+  const vHalf = THREE.MathUtils.degToRad(camera.fov / 2), hHalf = Math.atan(Math.tan(vHalf) * camera.aspect);
+  return { target: c, dist: zoomOut * 0.92 * r / Math.sin(Math.min(vHalf, hHalf)) };
+}
 resize();
-const vHalf = THREE.MathUtils.degToRad(camera.fov / 2);
-const hHalf = Math.atan(Math.tan(vHalf) * camera.aspect);
-camera.position.copy(center).addScaledVector(dir, 0.92 * radius / Math.sin(Math.min(vHalf, hHalf)));
-controls.update();
+{
+  const f = framing(boxOf(parts), 1);
+  controls.target.copy(f.target);
+  camera.position.copy(f.target).addScaledVector(new THREE.Vector3(-Math.sin(1.05), 0.36, Math.cos(1.05)).normalize(), f.dist);
+  controls.update();
+}
+let camTween = null;
+function moveCamera(box, zoomOut, below) {
+  const f = framing(box, zoomOut);
+  const fromT = controls.target.clone(), fromD = camera.position.distanceTo(controls.target);
+  const fromDir = camera.position.clone().sub(controls.target).normalize(), toDir = fromDir.clone();
+  // a camera above the model has a positive y offset from the target
+  if (below !== null && (toDir.y < 0) !== below) toDir.y = -toDir.y;
+  if (below !== null && Math.abs(toDir.y) < 0.3) { toDir.y = below ? -0.45 : 0.36; toDir.normalize(); }
+  if (fromT.distanceTo(f.target) < 1 && Math.abs(fromD - f.dist) < 0.05 * fromD && fromDir.distanceTo(toDir) < 0.01) return;
+  camTween = { t0: performance.now(), fromT, toT: f.target, fromD, toD: f.dist, fromDir, toDir };
+}
 
 function rows(list) {
   const m = new Map();
@@ -203,43 +220,71 @@ function rows(list) {
   return [...m.entries()].map(([k, n]) => { const [part, color] = k.split('|'); return { part, color, n }; })
     .sort((a, b) => (D.colors[a.color]?.[0] || '').localeCompare(D.colors[b.color]?.[0] || '', 'sv') || a.part.localeCompare(b.part));
 }
+const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 function table(rs, caption) {
-  const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   return (caption ? `<div class="caption">${esc(caption)}</div>` : '') + '<table>' + rs.map(r => {
     const [cn, hex] = D.colors[r.color] || [r.color, '#888'];
     return `<tr><td class="qty">${r.n}×</td><td><span class="sw" style="background:${hex}"></span>${esc(D.names[r.part] || r.part)}<div class="pn">${esc(r.part)} · ${esc(cn)}</div></td></tr>`;
   }).join('') + '</table>';
 }
-function show(i) {
-  step = Math.max(1, Math.min(used.length, i));
-  const s = used[step - 1];
-  anim = [];
+const title = S => P.sections[S.section] || S.section;
+
+let step = 0, tab = 'step', anim = [], mounts = [], t0 = 0, camInit = false;
+function show(i, animate = true) {
+  step = Math.max(1, Math.min(N, i));
+  const si = step - 1, S = P.steps[si], ctx = S.ctx.toLowerCase();
+  anim = []; mounts = [];
+  for (const g of subGroups.values()) g.position.set(0, 0, 0);
   for (const p of parts) {
-    p.g.visible = p.step <= s;
-    p.g.position.y = p.y0;
-    if (p.step === s && !reduce && step < used.length) anim.push(p);
+    p.g.position.copy(p.home);
+    p.g.visible = ctx !== 'main' ? (p.ctx === ctx && p.st <= si)
+      : (p.ctx === 'main' ? p.st <= si : (mountStep[p.ctx] ?? Infinity) <= si);
+    if (p.g.visible && p.st === si && animate && !reduce) anim.push(p);
   }
-  // keep submodel group visibility in sync with their parts
-  model.traverse(g => { if (g.isGroup && g !== model && !parts.find(p => p.g === g)) g.visible = true; });
-  const cur = parts.filter(p => p.step === s);
+  anim.sort((a, b) => a.k - b.k);
+  const gap = Math.min(150, 1300 / Math.max(1, anim.length));
+  anim.forEach((p, j) => p.delay = j * gap);
+  if (animate && !reduce) for (const [sub, dx, dy, dz, travel] of S.mounts)
+    mounts.push({ g: subGroups.get(sub.toLowerCase()), dir: new THREE.Vector3(dx, dy, dz), travel });
+  apply(0);
+  // frame the visible parts at their final positions; for a mount, include the sub-assembly
+  const shown = parts.filter(p => p.g.visible);
+  for (const p of shown) p.g.position.copy(p.home);
+  for (const g of subGroups.values()) g.position.set(0, 0, 0);
+  model.updateMatrixWorld(true);
+  const box = boxOf(shown);
+  apply(0);
+  const ups = anim.filter(p => p.dir.y > 0.5).length + mounts.filter(m => m.dir.y > 0.5).length;
+  const moving = anim.length + mounts.length;
+  const below = !moving ? null : ups * 2 >= moving;
+  if (camInit) moveCamera(box, S.mounts.length ? 1.15 : 1, below);
   slider.value = step;
-  document.getElementById('badge').textContent = step;
-  document.getElementById('of').textContent = `Steg ${step} av ${used.length}`;
-  document.getElementById('sub').textContent = SUBNAMES[cur[0]?.sub] || 'Montering';
+  const badge = document.getElementById('badge');
+  badge.textContent = step;
+  badge.classList.toggle('sub', ctx !== 'main');
+  document.getElementById('of').textContent = `Steg ${step} av ${N}`;
+  document.getElementById('sub').textContent = ctx !== 'main' ? `Delmontering: ${title(S)}`
+    : S.mounts.length ? `Montera: ${title(S)}` : title(S);
   renderList();
   t0 = performance.now();
 }
-function renderList() {
-  const s = used[step - 1];
-  const list = document.getElementById('list');
-  if (tab === 'step') list.innerHTML = table(rows(parts.filter(p => p.step === s)), `${parts.filter(p => p.step === s).length} delar i det här steget`);
-  else list.innerHTML = table(rows(parts), `${parts.length} delar totalt`);
+function apply(el) {
+  const ease = k => Math.pow(1 - Math.min(1, Math.max(0, k)), 3);
+  for (const p of anim) p.g.position.copy(p.home).addScaledVector(p.dir, p.travel * ease((el - p.delay) / PART_MS));
+  for (const m of mounts) m.g.position.copy(m.dir).multiplyScalar(m.travel * ease((el - 200) / MOUNT_MS));
 }
-let t0 = 0;
+function renderList() {
+  const si = step - 1, S = P.steps[si];
+  const list = document.getElementById('list');
+  if (tab === 'all') { list.innerHTML = table(rows(parts), `${parts.length} delar totalt`); return; }
+  if (S.mounts.length) { list.innerHTML = `<div class="caption">Inga nya delar: sätt den färdiga delmonteringen „${esc(title(S))}” på plats.</div>`; return; }
+  const cur = parts.filter(p => p.st === si);
+  list.innerHTML = table(rows(cur), `${cur.length} delar i det här steget`);
+}
 document.getElementById('first').onclick = () => show(1);
 document.getElementById('prev').onclick = () => show(step - 1);
 document.getElementById('next').onclick = () => show(step + 1);
-document.getElementById('last').onclick = () => show(used.length);
+document.getElementById('last').onclick = () => show(N);
 slider.oninput = () => show(+slider.value);
 for (const [id, t] of [['tab-step', 'step'], ['tab-all', 'all']]) {
   document.getElementById(id).onclick = () => {
@@ -250,12 +295,20 @@ for (const [id, t] of [['tab-step', 'step'], ['tab-all', 'all']]) {
   };
 }
 addEventListener('keydown', e => { if (e.key === 'ArrowRight') show(step + 1); if (e.key === 'ArrowLeft') show(step - 1); });
-show(used.length);
+show(N, false);
+camInit = true;
 
 renderer.setAnimationLoop(now => {
-  const k = Math.min(1, (now - t0) / 450);
-  for (const p of anim) p.g.position.y = p.y0 - (1 - k) * (1 - k) * 60;
+  apply(now - t0);
+  if (camTween) {
+    const k = Math.min(1, (now - camTween.t0) / CAM_MS), e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+    const dir = camTween.fromDir.clone().lerp(camTween.toDir, e).normalize();
+    controls.target.lerpVectors(camTween.fromT, camTween.toT, e);
+    camera.position.copy(controls.target).addScaledVector(dir, camTween.fromD + (camTween.toD - camTween.fromD) * e);
+    if (k >= 1) camTween = null;
+  }
   controls.update();
   renderer.render(scene, camera);
 });
+window.__viewer = { show, N: () => N, ok: () => parts.length === P.parts.length && parts.every((p, i) => p.part === P.parts[i][0]) };
 </script>

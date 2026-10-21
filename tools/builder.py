@@ -51,11 +51,27 @@ def fmt(v):
     return "0" if s == "-0" else s
 
 
+def _bottom_up_key(line, hanging):
+    """Sort key for a part line: lowest part first (by the bottom of its bounding box), or the
+    highest part first (by its top) when the assembly is built hanging."""
+    import ldraw as L
+    t = line.split()
+    pos = np.array([float(v) for v in t[2:5]])
+    R = np.array([float(v) for v in t[5:14]]).reshape(3, 3)
+    try:
+        lo, hi = L.bbox(" ".join(t[14:]))
+    except Exception:
+        return -pos[1] if not hanging else pos[1]
+    ys = [(R @ np.array([x, y, z]))[1] + pos[1] for x in (lo[0], hi[0]) for y in (lo[1], hi[1]) for z in (lo[2], hi[2])]
+    return min(ys) if hanging else -max(ys)
+
+
 class Sub:
     def __init__(self, model, name, title):
         self.model, self.name, self.title = model, name, title
         self.lines = []
         self.count = 0
+        self.hanging = False   # True: built upside down, so big steps are split top-down instead of bottom-up
 
     def add(self, part, color, pos, R=I, note=None):
         part = part if part.endswith((".dat", ".ldr")) else part + ".dat"
@@ -84,28 +100,31 @@ class Sub:
     MAX_STEP = 10
 
     def _chunked(self):
-        """Split steps with many parts into several, bottom-up (largest y first)."""
-        steps, cur, note = [], [], None
+        """Split steps with many parts into several, bottom-up (largest y first; top-down if hanging).
+        "0 // section:" comments stay at the start of their step; other comments stay with their part."""
+        steps, cur, note, head = [], [], [], []
         for ln in self.lines:
             if ln.startswith("0 STEP"):
-                steps.append(cur)
-                cur = []
+                steps.append((head, cur))
+                cur, head = [], []
+            elif ln.startswith("0 // section:"):
+                head.append(ln)
             elif ln.startswith("0 //"):
-                note = ln
+                note.append(ln)
             else:
                 cur.append((note, ln))
-                note = None
-        steps.append(cur)
+                note = []
+        steps.append((head, cur))
         out = []
-        for st in steps:
+        for head, st in steps:
             if not st:
                 continue
+            out += head
             if len(st) > self.MAX_STEP:
-                st = sorted(st, key=lambda it: -float(it[1].split()[3]))
+                st = sorted(st, key=lambda it: _bottom_up_key(it[1], self.hanging))
             for i in range(0, len(st), self.MAX_STEP):
                 for nt, ln in st[i:i + self.MAX_STEP]:
-                    if nt:
-                        out.append(nt)
+                    out += nt
                     out.append(ln)
                 out.append("0 STEP")
         return out

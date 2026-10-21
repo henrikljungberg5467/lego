@@ -51,6 +51,7 @@ h1 span { color: var(--deere); }
 .rail { min-height: 0; display: flex; flex-direction: column; gap: 10px; }
 .stepper { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 12px; display: grid; gap: 10px; }
 .stepline { display: flex; align-items: center; gap: 12px; }
+.badge.sub { background: var(--deere); color: var(--deere-ink); }
 .badge { font-family: var(--font-display); font-weight: 800; font-size: 34px; line-height: 1; min-width: 64px; text-align: center; padding: 6px 8px 4px;
   background: var(--decal); color: var(--decal-ink); border-radius: 4px; font-variant-numeric: tabular-nums; }
 .stepinfo { min-width: 0; }
@@ -126,12 +127,7 @@ import { LDrawLoader } from 'three/addons/loaders/LDrawLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
-const SUBNAMES = {
-  'rear_frame.ldr': 'Bakram med hjullager', 'rear_wheels.ldr': 'Drivhjul', 'floor.ldr': 'Golv, fotstöd och lyftpedal',
-  'front_frame.ldr': 'Främre ram och tvärbalk', 'casters.ldr': 'Länkhjul', 'deck.ldr': 'Klippaggregat 42"',
-  'body.ldr': 'Kaross och stänkskärmar', 'seat.ldr': 'Förarstol', 'lap_bars.ldr': 'Styrspakar', 'z315e.ldr': 'Montering'
-};
-const D = window.PARTDATA;
+const D = window.PARTDATA, P = D.plan;
 const stage = document.getElementById('stage');
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -156,46 +152,67 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => scen
 new MutationObserver(() => scene.background = new THREE.Color(themeBg())).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 scene.background = new THREE.Color(themeBg());
 
-let model, parts = [], nSteps = 0, step = 0, tab = 'step', anim = [];
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const PART_MS = 480, MOUNT_MS = 1100, CAM_MS = 700;
 
 const loader = new LDrawLoader();
 loader.setPartsLibraryPath('./');
 await loader.preloadMaterials('LDConfig.ldr');
-model = await loader.loadAsync('z315e_packed.mpd');
+const model = await loader.loadAsync('z315e_packed.mpd');
 model.rotation.x = Math.PI;
 scene.add(model);
 model.updateMatrixWorld(true);
 
-// collect parts (groups whose file name is a library part) with their step and submodel
+// Parts in file order, matched with the build plan (same order, computed when the viewer was built).
+// Positions are LDraw coordinates in the part's parent: the model itself, or a sub-assembly placed at the origin.
+const parts = [], subGroups = new Map();
 model.traverse(g => {
   if (!g.isGroup || g === model) return;
   const f = (g.userData.fileName || '').toLowerCase();
-  if (g.userData.type === 'Part' || /^[0-9a-z]+\.dat$/.test(f)) {
-    let sub = g.parent, subName = '';
-    while (sub && sub !== model) { if ((sub.userData.fileName || '').endsWith('.ldr')) { subName = sub.userData.fileName; break; } sub = sub.parent; }
-    parts.push({ g, step: g.userData.buildingStep, part: f.replace('.dat', ''), color: String(g.userData.colorCode), sub: subName, y0: g.position.y });
-  }
+  if (g.userData.type === 'Part' || /^[0-9a-z]+\.dat$/.test(f)) parts.push({ g, part: f.replace('.dat', ''), color: String(g.userData.colorCode), home: g.position.clone() });
+  else if (f.endsWith('.ldr')) subGroups.set(f, g);
 });
-nSteps = model.userData.numBuildingSteps;
-const used = [...new Set(parts.map(p => p.step))].sort((a, b) => a - b);
-const stepIndex = new Map(used.map((s, i) => [s, i + 1]));
+if (parts.length !== P.parts.length || parts.some((p, i) => p.part !== P.parts[i][0])) console.error('Byggplanen stämmer inte med modellen');
+parts.forEach((p, i) => {
+  const [, st, k, dx, dy, dz, travel] = P.parts[i];
+  Object.assign(p, { st, k, travel, dir: new THREE.Vector3(dx, dy, dz), ctx: P.steps[st].ctx.toLowerCase() });
+});
+const N = P.steps.length;
+const mountStep = {};
+P.steps.forEach((S, i) => S.mounts.forEach(([sub]) => mountStep[sub.toLowerCase()] = i));
+
 document.getElementById('nparts').textContent = parts.length;
-document.getElementById('nsteps').textContent = used.length;
+document.getElementById('nsteps').textContent = N;
 const slider = document.getElementById('slider');
-slider.max = used.length; slider.value = used.length;
+slider.max = N; slider.value = N;
 document.getElementById('loading').hidden = true;
 
-const box = new THREE.Box3().setFromObject(model);
-const center = box.getCenter(new THREE.Vector3());
-const radius = box.getSize(new THREE.Vector3()).length() / 2;
-controls.target.copy(center);
-const dir = new THREE.Vector3(-Math.sin(1.05), 0.36, Math.cos(1.05)).normalize();
+// camera: frames what is shown in the step (the growing model, or the sub-assembly being built) and
+// turns to the underside when the step's parts go on from below
+function boxOf(list) { const b = new THREE.Box3(); for (const p of list) b.expandByObject(p.g); return b; }
+function framing(box, zoomOut) {
+  const c = box.getCenter(new THREE.Vector3()), r = Math.max(60, box.getSize(new THREE.Vector3()).length() / 2);
+  const vHalf = THREE.MathUtils.degToRad(camera.fov / 2), hHalf = Math.atan(Math.tan(vHalf) * camera.aspect);
+  return { target: c, dist: zoomOut * 0.92 * r / Math.sin(Math.min(vHalf, hHalf)) };
+}
 resize();
-const vHalf = THREE.MathUtils.degToRad(camera.fov / 2);
-const hHalf = Math.atan(Math.tan(vHalf) * camera.aspect);
-camera.position.copy(center).addScaledVector(dir, 0.92 * radius / Math.sin(Math.min(vHalf, hHalf)));
-controls.update();
+{
+  const f = framing(boxOf(parts), 1);
+  controls.target.copy(f.target);
+  camera.position.copy(f.target).addScaledVector(new THREE.Vector3(-Math.sin(1.05), 0.36, Math.cos(1.05)).normalize(), f.dist);
+  controls.update();
+}
+let camTween = null;
+function moveCamera(box, zoomOut, below) {
+  const f = framing(box, zoomOut);
+  const fromT = controls.target.clone(), fromD = camera.position.distanceTo(controls.target);
+  const fromDir = camera.position.clone().sub(controls.target).normalize(), toDir = fromDir.clone();
+  // a camera above the model has a positive y offset from the target
+  if (below !== null && (toDir.y < 0) !== below) toDir.y = -toDir.y;
+  if (below !== null && Math.abs(toDir.y) < 0.3) { toDir.y = below ? -0.45 : 0.36; toDir.normalize(); }
+  if (fromT.distanceTo(f.target) < 1 && Math.abs(fromD - f.dist) < 0.05 * fromD && fromDir.distanceTo(toDir) < 0.01) return;
+  camTween = { t0: performance.now(), fromT, toT: f.target, fromD, toD: f.dist, fromDir, toDir };
+}
 
 function rows(list) {
   const m = new Map();
@@ -203,43 +220,71 @@ function rows(list) {
   return [...m.entries()].map(([k, n]) => { const [part, color] = k.split('|'); return { part, color, n }; })
     .sort((a, b) => (D.colors[a.color]?.[0] || '').localeCompare(D.colors[b.color]?.[0] || '', 'sv') || a.part.localeCompare(b.part));
 }
+const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 function table(rs, caption) {
-  const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   return (caption ? `<div class="caption">${esc(caption)}</div>` : '') + '<table>' + rs.map(r => {
     const [cn, hex] = D.colors[r.color] || [r.color, '#888'];
     return `<tr><td class="qty">${r.n}×</td><td><span class="sw" style="background:${hex}"></span>${esc(D.names[r.part] || r.part)}<div class="pn">${esc(r.part)} · ${esc(cn)}</div></td></tr>`;
   }).join('') + '</table>';
 }
-function show(i) {
-  step = Math.max(1, Math.min(used.length, i));
-  const s = used[step - 1];
-  anim = [];
+const title = S => P.sections[S.section] || S.section;
+
+let step = 0, tab = 'step', anim = [], mounts = [], t0 = 0, camInit = false;
+function show(i, animate = true) {
+  step = Math.max(1, Math.min(N, i));
+  const si = step - 1, S = P.steps[si], ctx = S.ctx.toLowerCase();
+  anim = []; mounts = [];
+  for (const g of subGroups.values()) g.position.set(0, 0, 0);
   for (const p of parts) {
-    p.g.visible = p.step <= s;
-    p.g.position.y = p.y0;
-    if (p.step === s && !reduce && step < used.length) anim.push(p);
+    p.g.position.copy(p.home);
+    p.g.visible = ctx !== 'main' ? (p.ctx === ctx && p.st <= si)
+      : (p.ctx === 'main' ? p.st <= si : (mountStep[p.ctx] ?? Infinity) <= si);
+    if (p.g.visible && p.st === si && animate && !reduce) anim.push(p);
   }
-  // keep submodel group visibility in sync with their parts
-  model.traverse(g => { if (g.isGroup && g !== model && !parts.find(p => p.g === g)) g.visible = true; });
-  const cur = parts.filter(p => p.step === s);
+  anim.sort((a, b) => a.k - b.k);
+  const gap = Math.min(150, 1300 / Math.max(1, anim.length));
+  anim.forEach((p, j) => p.delay = j * gap);
+  if (animate && !reduce) for (const [sub, dx, dy, dz, travel] of S.mounts)
+    mounts.push({ g: subGroups.get(sub.toLowerCase()), dir: new THREE.Vector3(dx, dy, dz), travel });
+  apply(0);
+  // frame the visible parts at their final positions; for a mount, include the sub-assembly
+  const shown = parts.filter(p => p.g.visible);
+  for (const p of shown) p.g.position.copy(p.home);
+  for (const g of subGroups.values()) g.position.set(0, 0, 0);
+  model.updateMatrixWorld(true);
+  const box = boxOf(shown);
+  apply(0);
+  const ups = anim.filter(p => p.dir.y > 0.5).length + mounts.filter(m => m.dir.y > 0.5).length;
+  const moving = anim.length + mounts.length;
+  const below = !moving ? null : ups * 2 >= moving;
+  if (camInit) moveCamera(box, S.mounts.length ? 1.15 : 1, below);
   slider.value = step;
-  document.getElementById('badge').textContent = step;
-  document.getElementById('of').textContent = `Steg ${step} av ${used.length}`;
-  document.getElementById('sub').textContent = SUBNAMES[cur[0]?.sub] || 'Montering';
+  const badge = document.getElementById('badge');
+  badge.textContent = step;
+  badge.classList.toggle('sub', ctx !== 'main');
+  document.getElementById('of').textContent = `Steg ${step} av ${N}`;
+  document.getElementById('sub').textContent = ctx !== 'main' ? `Delmontering: ${title(S)}`
+    : S.mounts.length ? `Montera: ${title(S)}` : title(S);
   renderList();
   t0 = performance.now();
 }
-function renderList() {
-  const s = used[step - 1];
-  const list = document.getElementById('list');
-  if (tab === 'step') list.innerHTML = table(rows(parts.filter(p => p.step === s)), `${parts.filter(p => p.step === s).length} delar i det här steget`);
-  else list.innerHTML = table(rows(parts), `${parts.length} delar totalt`);
+function apply(el) {
+  const ease = k => Math.pow(1 - Math.min(1, Math.max(0, k)), 3);
+  for (const p of anim) p.g.position.copy(p.home).addScaledVector(p.dir, p.travel * ease((el - p.delay) / PART_MS));
+  for (const m of mounts) m.g.position.copy(m.dir).multiplyScalar(m.travel * ease((el - 200) / MOUNT_MS));
 }
-let t0 = 0;
+function renderList() {
+  const si = step - 1, S = P.steps[si];
+  const list = document.getElementById('list');
+  if (tab === 'all') { list.innerHTML = table(rows(parts), `${parts.length} delar totalt`); return; }
+  if (S.mounts.length) { list.innerHTML = `<div class="caption">Inga nya delar: sätt den färdiga delmonteringen „${esc(title(S))}” på plats.</div>`; return; }
+  const cur = parts.filter(p => p.st === si);
+  list.innerHTML = table(rows(cur), `${cur.length} delar i det här steget`);
+}
 document.getElementById('first').onclick = () => show(1);
 document.getElementById('prev').onclick = () => show(step - 1);
 document.getElementById('next').onclick = () => show(step + 1);
-document.getElementById('last').onclick = () => show(used.length);
+document.getElementById('last').onclick = () => show(N);
 slider.oninput = () => show(+slider.value);
 for (const [id, t] of [['tab-step', 'step'], ['tab-all', 'all']]) {
   document.getElementById(id).onclick = () => {
@@ -250,12 +295,20 @@ for (const [id, t] of [['tab-step', 'step'], ['tab-all', 'all']]) {
   };
 }
 addEventListener('keydown', e => { if (e.key === 'ArrowRight') show(step + 1); if (e.key === 'ArrowLeft') show(step - 1); });
-show(used.length);
+show(N, false);
+camInit = true;
 
 renderer.setAnimationLoop(now => {
-  const k = Math.min(1, (now - t0) / 450);
-  for (const p of anim) p.g.position.y = p.y0 - (1 - k) * (1 - k) * 60;
+  apply(now - t0);
+  if (camTween) {
+    const k = Math.min(1, (now - camTween.t0) / CAM_MS), e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+    const dir = camTween.fromDir.clone().lerp(camTween.toDir, e).normalize();
+    controls.target.lerpVectors(camTween.fromT, camTween.toT, e);
+    camera.position.copy(controls.target).addScaledVector(dir, camTween.fromD + (camTween.toD - camTween.fromD) * e);
+    if (k >= 1) camTween = null;
+  }
   controls.update();
   renderer.render(scene, camera);
 });
+window.__viewer = { show, N: () => N, ok: () => parts.length === P.parts.length && parts.every((p, i) => p.part === P.parts[i][0]) };
 </script>

@@ -41,13 +41,25 @@ AXLE_COLOR = {2: RED, 3: LBG, 4: BLACK, 5: LBG, 6: BLACK, 7: LBG, 8: BLACK, 10: 
 m = Model("z315e.ldr", "John Deere Z315E ZTrak - LEGO 1:8")
 
 
+def inplace(name, title):
+    """A section built directly on the model, because it only holds together through parts already there."""
+    m.main.step()
+    m.main.comment(f"section: {name} - {title}")
+    return m.main
+
+
+def separate(name, title):
+    """A sub-assembly built on its own and then mounted in one piece."""
+    return m.sub(name, title)
+
+
 def sgn_axis(s, axis):
     return ("+" if s > 0 else "-") + axis
 
 
 # ================================================================== rear frame (grid A)
 def rear_frame():
-    s = m.sub("rear_frame", "Rear frame with axle bearings")
+    s = inplace("rear_frame", "Rear frame with axle bearings")
     for x in (-1, 1):
         for xx in (70, 90):
             s.add("3702", BLACK, (x * xx, -80, 0), R_ALONG_Z, "axle bearing")
@@ -86,7 +98,7 @@ def rear_wheel(s, side):
 
 
 def rear_wheels():
-    s = m.sub("rear_wheels", "Rear drive wheels")
+    s = inplace("rear_wheels", "Rear drive wheels")
     rear_wheel(s, 1)
     s.step()
     rear_wheel(s, -1)
@@ -95,7 +107,7 @@ def rear_wheels():
 
 # ================================================================== front frame (Technic)
 def front_frame():
-    s = m.sub("front_frame", "Front frame with cross tube")
+    s = separate("front_frame", "Front frame with cross tube")
     s.add(BEAM[15], GREEN, (0, CROSSBAR_Y, CROSSBAR_Z), R_BEAM_X, "front cross tube")
     for x in (-1, 1):
         s.add(BEAM[15], GREEN, (x * PIVOT_X, CROSSBAR_Y, CROSSBAR_Z + 160), I, "side member")
@@ -134,7 +146,7 @@ def caster(s, side):
 
 
 def casters():
-    s = m.sub("casters", "Front caster wheels")
+    s = inplace("casters", "Front caster wheels")
     caster(s, 1)
     s.step()
     caster(s, -1)
@@ -143,7 +155,7 @@ def casters():
 
 # ================================================================== operator floor (grid B)
 def floor():
-    s = m.sub("floor", "Operator floor pan and footrest")
+    s = inplace("floor", "Operator floor pan and footrest")
     holes = [(x, z) for x in (-140, 140) for z in HANGER_Z]
     # floor plates: studs at multiples of 20; outer columns plug into the side members
     fill(s, "plate", GREEN, -150, 150, -340, -80, -120, avoid=holes, prefer="z")
@@ -223,12 +235,15 @@ def cutting(s):
     s.step()
     for name, part, (x, z), deg in GEARS:
         s.add("32123b", LBG, (x, -85, z), R_BUSH_Y)
+    s.step()
+    for name, part, (x, z), deg in GEARS:
         s.add(part, DBG, (x, GEAR_Y, z), rot_axis("Y", deg) @ R_GEAR, f"{name} gear")
     s.step()
 
 
 def deck():
-    s = m.sub("deck", "42 in. mower deck")
+    s = separate("deck", "42 in. mower deck")
+    s.hanging = True  # everything hangs under the top plates
     import numpy as np
     used = []
     # hanger plates (Technic plates with holes, hidden under the top tiles)
@@ -293,22 +308,31 @@ def deck():
         s.add("15535", BLACK, (x, -80, z), I, "spindle bearing")
     s.step()
     cutting(s)
-    # hanger rods; the front left one turns freely and carries the knob and the first gear
+    return s
+
+
+def deck_hangers():
+    """Hang the finished deck: rods down through the side members and the hanger plates, bushes underneath.
+    The front left rod turns freely and carries the knob and the first gear."""
+    s = inplace("deck_hangers", "Deck hanger rods and blade knob")
     for x in (-140, 140):
         for z in HANGER_Z:
             if (x, z) == GEARS[0][2]:
-                s.add(AXLE[6], AXLE_COLOR[6], (x, -104, z), R_AXLE_Y, "deck hanger and blade drive")
                 s.add("32072", YELLOW, (x, -150, z), R_GEAR, "knob: turn it to spin the blades")
+                s.add(AXLE[6], AXLE_COLOR[6], (x, -104, z), R_AXLE_Y, "deck hanger and blade drive")
             else:
-                s.add(AXLE[5], AXLE_COLOR[5], (x, -100, z), R_AXLE_Y, "deck hanger")
                 s.add("32123b", LBG, (x, -145, z), R_BUSH_Y)
+                s.add(AXLE[5], AXLE_COLOR[5], (x, -100, z), R_AXLE_Y, "deck hanger")
+    s.step()
+    for x in (-140, 140):
+        for z in HANGER_Z:
             s.add("3713", LBG, (x, -54, z), R_BUSH_Y)
     return s
 
 # ================================================================== body (grid A)
 def body():
     """Side panels sit above the rear tyres; the black front corners reach down in front of them."""
-    s = m.sub("body", "Rear body: engine bay, side panels, fender boxes")
+    s = separate("body", "Rear body: engine bay, side panels, fender boxes")
     Z0, Z1 = -80, BODY_Z1
     # engine bay walls on the second frame layer (top y=-96)
     for x in (-1, 1):
@@ -377,7 +401,7 @@ def body():
 
 # ================================================================== seat (grid A)
 def seat():
-    s = m.sub("seat", "Operator seat")
+    s = separate("seat", "Operator seat")
     fill(s, "brick", BLACK, -60, 60, -60, 80, -176)
     s.step()
     # seat base: four 2x8 plates along Z (the yellow 6x8 plate is not on Pick a Brick)
@@ -440,7 +464,7 @@ def lap_bar(s, side, park_deg=0.0):
 
 
 def lap_bars():
-    s = m.sub("lap_bars", "Steering levers (lap bars)")
+    s = inplace("lap_bars", "Steering levers (lap bars)")
     lap_bar(s, 1, 30)
     s.step()
     lap_bar(s, -1, 30)
@@ -448,9 +472,12 @@ def lap_bars():
 
 
 # ================================================================== assemble
-subs = [rear_frame(), rear_wheels(), floor(), front_frame(), casters(), deck(), body(), seat(), lap_bars()]
-for sub in subs:
-    m.main.place(sub)
-    m.main.step()
+for build in (rear_frame, rear_wheels, floor, front_frame, casters, deck, deck_hangers, body, seat, lap_bars):
+    sub = build()
+    if sub is not m.main:
+        m.main.step()
+        m.main.comment(f"section: mount {sub.name}")
+        m.main.place(sub)
+m.main.step()
 m.write(OUT)
-print("wrote", OUT, sum(s.count for s in subs), "parts")
+print("wrote", OUT, m.main.count - len(m.subs) + sum(s.count for s in m.subs), "parts")
