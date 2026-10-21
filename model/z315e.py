@@ -13,7 +13,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tools"))
-from builder import (Model, rot, I, box, fill, BLACK, GREEN, YELLOW, DBG, LBG, RED, BLUE, ORANGE, TAN)  # noqa: E402
+from builder import (Model, rot, rot_axis, I, box, fill, BLACK, GREEN, YELLOW, DBG, LBG, RED, BLUE, ORANGE, TAN)  # noqa: E402
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "z315e.mpd")
 
@@ -23,7 +23,7 @@ REAR_WHEEL_X = 140
 CROSSBAR_Z = -430          # front cross tube / caster pivots
 CROSSBAR_Y = -130
 PIVOT_X = 140
-HANGER_Z = (-230, -170)    # deck hanger rods (x = +-140)
+HANGER_Z = (-210, -170)    # deck hanger rods (x = +-140); the front left one also turns the blades
 BODY_Z1 = 120              # rear end of the body
 
 # common orientations
@@ -191,6 +191,41 @@ DECK_Z0, DECK_Z1 = -330, -130
 
 R_CORNER_R = rot(x="-Z", z="+X")         # round-corner parts for the right (-X) front corner
 
+# Cutting system: three blades under the deck on spindles through the deck top. The gears sit on top
+# of the deck, under the floor (where the real deck has its belt), and are driven by a knob on the
+# front left hanger rod, which turns freely in the side member.
+R_GEAR = rot(z="-Y", x="+X")             # gear / knob wheel with a vertical axle
+GEAR_Y = -100                            # gear centres; each gear rests on a half bush on a round tile
+# name, part, (x, z), tooth phase in degrees so that neighbouring gears mesh
+GEARS = [("knob", "3648b", (140, HANGER_Z[0]), 0.0), ("idler", "10928", (100, -210), 20.0),
+         ("left", "3648b", (60, -210), 0.62), ("centre idler", "3648b", (0, -210), 7.0),
+         ("right", "3648b", (-60, -210), 1.0), ("centre", "10928", (0, -250), 44.75)]
+
+
+def cutting(s):
+    """Blades on their spindles (outer blades higher than the centre blade, so the overlapping
+    blade circles never meet), then the gear train on top of the deck."""
+    pos = {name: xz for name, _, xz, _ in GEARS}
+    for name, deg in (("left", 0), ("right", 90)):
+        x, z = pos[name]
+        s.add(AXLE[4], AXLE_COLOR[4], (x, -70, z), R_AXLE_Y, f"{name} blade spindle")
+        s.add("32123b", LBG, (x, -59, z), R_BUSH_Y)
+        s.add("32124", BLACK, (x, -50, z), rot_axis("Y", deg), f"{name} blade")
+        s.add("32123b", LBG, (x, -37, z), R_BUSH_Y)
+    x, z = pos["centre"]
+    s.add("87083", DBG, (x, -60, z), R_AXLE_Y, "centre blade spindle, the stop holds the blade")
+    s.add("3713", LBG, (x, -54, z), R_BUSH_Y)
+    s.add("32123b", LBG, (x, -39, z), R_BUSH_Y)
+    s.add("32124", BLACK, (x, -30, z), rot_axis("Y", 45), "centre blade")
+    for name in ("idler", "centre idler"):
+        x, z = pos[name]
+        s.add(AXLE[2], BLACK, (x, -84, z), R_AXLE_Y)
+    s.step()
+    for name, part, (x, z), deg in GEARS:
+        s.add("32123b", LBG, (x, -85, z), R_BUSH_Y)
+        s.add(part, DBG, (x, GEAR_Y, z), rot_axis("Y", deg) @ R_GEAR, f"{name} gear")
+    s.step()
+
 
 def deck():
     s = m.sub("deck", "42 in. mower deck")
@@ -201,6 +236,13 @@ def deck():
         x0, x1 = sorted((x * 120, x * 160))
         s.add("32001", BLACK, ((x0 + x1) / 2, -72, -190), R_ALONG_Z, "hanger plate")
         used += [(xx, zz) for xx in (x0 + 10, x0 + 30) for zz in range(-240, -139, 20)]
+    # bearing plates for the blade spindles and gear shafts
+    s.add("3738", BLACK, (0, -72, -210), I, "spindle plate")
+    s.add("32001", BLACK, (100, -72, -190), R_ALONG_Z)
+    s.add("32001", BLACK, (0, -72, -250), I)
+    used += [(x, z) for x in range(-70, 71, 20) for z in (-220, -200)]
+    used += [(x, z) for x in (90, 110) for z in range(-240, -139, 20)]
+    used += [(x, z) for x in range(-50, 51, 20) for z in (-260, -240)]
     # rounded front corners
     corner_missing = []
     for x in (-1, 1):
@@ -238,26 +280,29 @@ def deck():
             box(s, "plate", BLACK, -240, -180, z0, z0 + 20, y)
         box(s, "plate", BLACK, -240, -220, -230, -190, y)
     s.step()
-    # top tiles, leaving studs free around the hanger rods and for the belt cover
+    # top tiles, leaving studs free around the hanger rods; round tiles with holes over the shafts
+    shafts = [xz for _, _, xz, _ in GEARS]
     free = list(corner_missing)
-    for x in (-140, 140):
-        for z in HANGER_Z:
-            free += [(x + dx, z + dz) for dx in (-10, 10) for dz in (-10, 10)]
-    dome = (-90, -260)
-    free.append(dome)
+    for x, z in [(x, z) for x in (-140, 140) for z in HANGER_Z] + shafts:
+        free += [(x + dx, z + dz) for dx in (-10, 10) for dz in (-10, 10)]
     free += edge + [(x, DECK_Z0 + 30) for x in range(-90, 91, 20)]
     fill(s, "tile", GREEN, -DECK_X, DECK_X, DECK_Z0, DECK_Z1, -80, avoid=free, prefer="z")
     for x in range(-90, 91, 20):
         s.add("11477", GREEN, (x, -64, DECK_Z0 + 20), I, "rounded front edge")
-    s.add("6141", BLACK, (dome[0], -80, dome[1]), I)
-    s.add("3960", BLACK, (dome[0], -96, dome[1]), I, "belt cover")
+    for x, z in shafts:
+        s.add("15535", BLACK, (x, -80, z), I, "spindle bearing")
     s.step()
-    # hanger rods
+    cutting(s)
+    # hanger rods; the front left one turns freely and carries the knob and the first gear
     for x in (-140, 140):
         for z in HANGER_Z:
-            s.add(AXLE[5], AXLE_COLOR[5], (x, -100, z), R_AXLE_Y, "deck hanger")
+            if (x, z) == GEARS[0][2]:
+                s.add(AXLE[6], AXLE_COLOR[6], (x, -104, z), R_AXLE_Y, "deck hanger and blade drive")
+                s.add("32072", YELLOW, (x, -150, z), R_GEAR, "knob: turn it to spin the blades")
+            else:
+                s.add(AXLE[5], AXLE_COLOR[5], (x, -100, z), R_AXLE_Y, "deck hanger")
+                s.add("32123b", LBG, (x, -145, z), R_BUSH_Y)
             s.add("3713", LBG, (x, -54, z), R_BUSH_Y)
-            s.add("32123b", LBG, (x, -145, z), R_BUSH_Y)
     return s
 
 # ================================================================== body (grid A)
@@ -379,7 +424,6 @@ def seat():
 def lap_bar(s, side, park_deg=0.0):
     """Steering lever. side=+1 left, -1 right. park_deg swings it outward about its pivot."""
     import numpy as np
-    from builder import rot_axis
     px, py, pz = side * 120, -166, -70
     Rp = rot_axis("+Z", side * park_deg)
 
