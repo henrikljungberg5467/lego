@@ -24,7 +24,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Bygg sidan
         # viewer/index.html är skriven som Claude-artefakt (utan dokumentskal); här får den doctype och viewport
         run: |
