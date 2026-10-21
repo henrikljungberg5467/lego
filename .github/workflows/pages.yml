@@ -1,0 +1,44 @@
+# Publicerar 3D-visaren (viewer/) på GitHub Pages.
+# Kräver en gång: Settings → Pages → Build and deployment → Source: "GitHub Actions".
+name: Visare på GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths: ["viewer/**", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bygg sidan
+        # viewer/index.html är skriven som Claude-artefakt (utan dokumentskal); här får den doctype och viewport
+        run: |
+          mkdir -p _site
+          {
+            printf '<!doctype html>\n<html lang="sv">\n<meta charset="utf-8">\n'
+            printf '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+            cat viewer/index.html
+          } > _site/index.html
+          cp viewer/z315e_packed.mpd viewer/LDConfig.ldr _site/
+          touch _site/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
