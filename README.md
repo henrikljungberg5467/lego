@@ -10,7 +10,7 @@ En byggbar LEGO-modell av nollsvängsklipparen John Deere Z315E med 42-tums klip
 | Antal delar | 485 (116 olika del/färg-kombinationer) |
 | Mått | ca 23 × 18 × 14 cm (L × B × H) |
 | Färger | grön, gul, svart, mörk och ljus blågrå, en orange detalj |
-| Filformat | LDraw MPD – öppnas i BrickLink Studio, LeoCAD eller LDCad |
+| Filformat | LDraw MPD (öppnas i BrickLink Studio, LeoCAD eller LDCad), GLB och STL |
 
 ## Funktioner
 
@@ -23,13 +23,16 @@ En byggbar LEGO-modell av nollsvängsklipparen John Deere Z315E med 42-tums klip
 
 ## Bygga modellen
 
-1. **Instruktioner:** öppna [`model/z315e.mpd`](model/z315e.mpd) i [BrickLink Studio](https://www.bricklink.com/v3/studio/download.page) (gratis). Främre ramen, klippaggregatet, karossen och sätet är delmonteringar som byggs för sig och sätts på plats färdiga. Bakram, drivhjul, golv, länkhjul, upphängning och styrspakar byggs direkt på modellen. Studios instruktionsläge gör en utskrivbar PDF av stegen.
-2. **3D-visare:** `viewer/index.html` visar modellen steg för steg med dellista för varje steg. Varje del kommer in från ett håll där den inte krockar med det som redan är byggt, och delmonteringarna byggs för sig innan de åker in på plats. När delar sätts underifrån vänds vyn så att man ser undersidan. Visaren publiceras även som Claude-artefakt.
-3. **Köpa delar:**
+1. **Bygginstruktion:** [`docs/bygginstruktioner.pdf`](docs/bygginstruktioner.pdf) har 80 sidor A4 liggande. Den börjar med alla delar och deras Pick a Brick-nummer och har sedan 74 byggsteg i samma ordning som 3D-visaren. Delar från tidigare steg är ljusare, röda pilar visar delar som inte sätts ovanifrån och delmonteringarna har grön ram.
+2. **Studio-instruktioner:** öppna [`model/z315e.mpd`](model/z315e.mpd) i [BrickLink Studio](https://www.bricklink.com/v3/studio/download.page) (gratis). Främre ramen, klippaggregatet, karossen och sätet är delmonteringar som byggs för sig och sätts på plats färdiga. Bakram, drivhjul, golv, länkhjul, upphängning och styrspakar byggs direkt på modellen. Studios instruktionsläge gör en utskrivbar PDF av stegen.
+3. **3D-visare:** `viewer/index.html` visar modellen steg för steg med dellista för varje steg. Varje del kommer in från ett håll där den inte krockar med det som redan är byggt, och delmonteringarna byggs för sig innan de åker in på plats. När delar sätts underifrån vänds vyn så att man ser undersidan. Visaren är en statisk webbsida, alltså tre filer utan serverdel, och kan läggas på vilken webbserver som helst. Den måste öppnas via http och inte direkt som fil från disken. Lokalt räcker `python3 -m http.server` i `viewer/`. Den publiceras även som Claude-artefakt.
+4. **Köpa delar:**
    - BrickLink: ladda upp [`docs/bricklink_wanted.xml`](docs/bricklink_wanted.xml) under *Want → Upload*.
    - LEGO Pick a Brick: ladda upp [`docs/pick_a_brick.csv`](docs/pick_a_brick.csv) (elementId, quantity, 115 rader). Elementen är kontrollerade mot Pick a Brick i oktober 2026, utom de sex som kom till med knivarna: 24-kuggshjulet, 8-kuggshjulet, knivarna, knoppen, axeln med stopp och Technic-plattan 2 × 8. Det enda som saknas där är de två bakdäcken, som köps på BrickLink med [`docs/bricklink_inte_pa_pab.xml`](docs/bricklink_inte_pa_pab.xml). Vad som byttes ut för att allt annat skulle finnas på Pick a Brick står i [`docs/inte_pa_pick_a_brick.md`](docs/inte_pa_pick_a_brick.md).
    - Rebrickable: importera [`docs/parts.csv`](docs/parts.csv) (Part, Color, Quantity). Därifrån kan listan skickas vidare till BrickLink eller LEGO Pick a Brick.
    - Hela listan med svenska färgnamn finns i [`docs/parts.md`](docs/parts.md).
+
+3D-filer: [`docs/z315e.glb`](docs/z315e.glb) har färger, en nod per del och verklig storlek. Den öppnas i till exempel Blender, Windows 3D-visare eller en webbläsarbaserad glTF-visare. [`docs/z315e.stl`](docs/z315e.stl) är hela modellen som ett enda nät i millimeter, utan färger. Den passar för rendering och CAD men går inte att 3D-skriva ut som den är, eftersom den består av 485 separata delar.
 
 Den enda ovanligare delen är den gröna Technic-balken 1 × 15 (32278). Den har funnits i sex set, bland annat LEGO 42157 John Deere 948L-II, och finns på Pick a Brick.
 
@@ -64,6 +67,8 @@ tools/render.mjs      rendering i headless Chromium
 tools/partlist.py     dellistor
 tools/buildplan.py    byggordning och fri väg in för varje del (används av visaren)
 tools/build_viewer.py packar modellen med alla LDraw-delar för visaren
+tools/instructions.py bygginstruktionen som PDF (bilder via instructions.mjs/.html)
+tools/export3d.mjs    GLB- och STL-export
 ```
 
 ### Generera om
@@ -77,6 +82,8 @@ python3 tools/check.py model/z315e.mpd        # anslutningar, kollisioner, färg
 python3 tools/partlist.py model/z315e.mpd docs
 tools/views.sh model/z315e.mpd tmp/view       # granskningsbilder
 python3 tools/build_viewer.py
+python3 tools/instructions.py                 # docs/bygginstruktioner.pdf
+node tools/export3d.mjs docs/z315e.glb docs/z315e.stl
 ```
 
 ## Fler vyer

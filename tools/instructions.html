@@ -1,0 +1,234 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>html,body{margin:0;background:#fff}</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head><body>
+<script type="module">
+// Renders the pictures for the building instructions (driven by tools/instructions.mjs).
+// Step pictures: parts from earlier steps are faded, the step's own parts are in full colour, and parts
+// that do not go on from above get a red arrow showing the direction they come from.
+import * as THREE from 'three';
+import { LDrawLoader } from 'three/addons/loaders/LDrawLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const params = new URLSearchParams(location.search);
+const W = +(params.get('w') || 1500), H = +(params.get('h') || 940);
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true, alpha: true });
+renderer.setSize(W, H); renderer.setPixelRatio(1);
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const WHITE = new THREE.Color(0xffffff);
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.9;
+const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(-1, 2, 1.5); scene.add(sun);
+const camera = new THREE.PerspectiveCamera(28, W / H, 1, 100000);
+const arrows = new THREE.Group(); scene.add(arrows);
+const ARROW = new THREE.MeshBasicMaterial({ color: 0xd7261e });
+
+let model, P, parts = [], subGroups = new Map(), mountStep = {};
+const faded = new Map();     // original material -> faded clone
+const pickWhite = new THREE.MeshBasicMaterial({ color: 0xffffff }), pickBlack = new THREE.MeshBasicMaterial({ color: 0x000000 });
+
+function fadeOf(m) {
+  if (Array.isArray(m)) return m.map(fadeOf);
+  if (!faded.has(m)) {
+    const f = m.clone();
+    if (f.uniforms && f.uniforms.diffuse) f.uniforms.diffuse.value = f.uniforms.diffuse.value.clone().lerp(WHITE, 0.5);
+    else if (f.color) f.color = f.color.clone().lerp(WHITE, m.isLineBasicMaterial ? 0.5 : 0.42);
+    faded.set(m, f);
+  }
+  return faded.get(m);
+}
+
+window.load = async (plan) => {
+  P = plan;
+  const loader = new LDrawLoader();
+  loader.setPartsLibraryPath('/ldraw/');
+  await loader.preloadMaterials('/ldraw/LDConfig.ldr');
+  model = await loader.loadAsync('/model/z315e.mpd');
+  model.rotation.x = Math.PI;
+  scene.add(model);
+  model.updateMatrixWorld(true);
+  model.traverse(g => {
+    if (!g.isGroup || g === model) return;
+    const f = (g.userData.fileName || '').toLowerCase();
+    if (g.userData.type === 'Part' || /^[0-9a-z]+\.dat$/.test(f)) {
+      const meshes = [];
+      g.traverse(c => { if (c.isMesh || c.isLineSegments) meshes.push({ c, orig: c.material }); });
+      parts.push({ g, part: f.replace('.dat', ''), meshes });
+    } else if (f.endsWith('.ldr')) subGroups.set(f, g);
+  });
+  const ok = parts.length === P.parts.length && parts.every((p, i) => p.part === P.parts[i].part);
+  parts.forEach((p, i) => Object.assign(p, P.parts[i], { ctx: P.parts[i].ctx.toLowerCase() }));
+  P.steps.forEach((S, i) => S.mounts.forEach(m => mountStep[m.sub.toLowerCase()] = i));
+  return { ok, n: parts.length };
+};
+
+// LDraw direction -> world direction (the model is turned over: y and z flip)
+const world = d => new THREE.Vector3(d[0], -d[1], -d[2]).normalize();
+
+function setState(si, mode) {
+  // mode: 'step' (faded history, coloured new parts) or 'pick' (white new parts on black)
+  const S = P.steps[si], ctx = S.ctx.toLowerCase();
+  const isNew = [];
+  for (const p of parts) {
+    const vis = ctx !== 'main' ? (p.ctx === ctx && p.step <= si)
+      : (p.ctx === 'main' ? p.step <= si : (mountStep[p.ctx] ?? Infinity) <= si);
+    p.g.visible = vis;
+    const fresh = vis && (p.step === si || (S.mounts.some(m => m.sub.toLowerCase() === p.ctx)));
+    if (fresh) isNew.push(p);
+    for (const { c, orig } of p.meshes) {
+      if (mode === 'pick') { c.visible = c.isMesh; c.material = fresh ? pickWhite : pickBlack; }
+      else { c.visible = true; c.material = fresh ? orig : fadeOf(orig); }
+    }
+  }
+  return isNew;
+}
+
+function arrowMesh(tip, dir, len) {
+  // dir points from the tip back along the way the part comes in
+  const g = new THREE.Group();
+  const head = 16, r = 3.2;
+  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len - head, 12), ARROW);
+  shaft.position.y = head + (len - head) / 2;
+  const cone = new THREE.Mesh(new THREE.ConeGeometry(8, head, 16), ARROW);
+  cone.rotation.x = Math.PI; cone.position.y = head / 2;
+  g.add(shaft, cone);
+  g.position.copy(tip);
+  g.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+  return g;
+}
+
+function buildArrows(si, isNew) {
+  arrows.clear();
+  const S = P.steps[si];
+  const pts = [];
+  const add = (box, d, len) => {
+    const c = box.getCenter(new THREE.Vector3()), size = box.getSize(new THREE.Vector3());
+    const half = Math.abs(d.x) * size.x / 2 + Math.abs(d.y) * size.y / 2 + Math.abs(d.z) * size.z / 2;
+    const tip = c.clone().addScaledVector(d, half + 8);
+    arrows.add(arrowMesh(tip, d, len));
+    pts.push(tip, tip.clone().addScaledVector(d, len));
+  };
+  for (const m of S.mounts) {
+    const g = subGroups.get(m.sub.toLowerCase());
+    add(new THREE.Box3().setFromObject(g), world(m.dir), 110);
+  }
+  if (!S.mounts.length) for (const p of isNew) {
+    if (p.dir[1] < -0.5) continue;               // from above: no arrow needed
+    add(new THREE.Box3().setFromObject(p.g), world(p.dir), 46);
+  }
+  return pts;
+}
+
+function frame(pts, az, el, aspect, margin) {
+  // exact fit for a perspective camera through all points (the corners of every visible part's box)
+  const a = THREE.MathUtils.degToRad(az), e = THREE.MathUtils.degToRad(el);
+  const dir = new THREE.Vector3(Math.cos(e) * Math.sin(a), Math.sin(e), Math.cos(e) * Math.cos(a));
+  const right = new THREE.Vector3().crossVectors(dir.clone().negate(), new THREE.Vector3(0, 1, 0)).normalize();
+  const up = new THREE.Vector3().crossVectors(right, dir.clone().negate());
+  camera.aspect = aspect; camera.updateProjectionMatrix();
+  const c = new THREE.Box3().setFromPoints(pts).getCenter(new THREE.Vector3());
+  let rmin = Infinity, rmax = -Infinity, umin = Infinity, umax = -Infinity;
+  for (const p of pts) { const v = p.clone().sub(c); const r = v.dot(right), u = v.dot(up);
+    rmin = Math.min(rmin, r); rmax = Math.max(rmax, r); umin = Math.min(umin, u); umax = Math.max(umax, u); }
+  c.addScaledVector(right, (rmin + rmax) / 2).addScaledVector(up, (umin + umax) / 2);
+  const t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) / margin;
+  let dist = 0;
+  for (const p of pts) {
+    const v = p.clone().sub(c), along = v.dot(dir);
+    dist = Math.max(dist, along + Math.abs(v.dot(right)) / (t * aspect), along + Math.abs(v.dot(up)) / t);
+  }
+  camera.position.copy(c).addScaledVector(dir, dist); camera.up.set(0, 1, 0); camera.lookAt(c); camera.updateMatrixWorld();
+}
+
+function corners(b) {
+  const out = [];
+  for (const x of [b.min.x, b.max.x]) for (const y of [b.min.y, b.max.y]) for (const z of [b.min.z, b.max.z]) out.push(new THREE.Vector3(x, y, z));
+  return out;
+}
+function visiblePoints(list) {
+  const pts = [];
+  for (const p of list) if (p.g.visible) { const b = new THREE.Box3().setFromObject(p.g); if (!b.isEmpty()) pts.push(...corners(b)); }
+  return pts;
+}
+
+const pickTarget = new THREE.WebGLRenderTarget(240, 150);
+function score(az, el, pts) {
+  frame(pts, az, el, 240 / 150, 1.08);
+  const bg = scene.background;
+  scene.background = new THREE.Color(0x000000); arrows.visible = false;
+  renderer.setRenderTarget(pickTarget); renderer.render(scene, camera); renderer.setRenderTarget(null);
+  scene.background = bg; arrows.visible = true;
+  const buf = new Uint8Array(240 * 150 * 4);
+  renderer.readRenderTargetPixels(pickTarget, 0, 0, 240, 150, buf);
+  let n = 0; for (let i = 0; i < buf.length; i += 4) if (buf[i] > 128) n++;
+  return n;
+}
+
+// Render one step. prevAz keeps the view steady unless another side shows the new parts much better.
+window.renderStep = (si, prevAz) => {
+  const S = P.steps[si];
+  const isNew = setState(si, 'pick');
+  const moving = S.mounts.length ? S.mounts : isNew;
+  const below = moving.length > 0 && moving.filter(m => m.dir[1] > 0.5).length * 2 >= moving.length;
+  const el = below ? -28 : 26;
+  const pts = visiblePoints(parts);
+  const cands = [-55, 55, -125, 125];
+  let best = null;
+  for (const az of cands) {
+    const s = score(az, el, pts) * (az === prevAz ? 1.35 : 1);
+    if (!best || s > best.s) best = { az, s };
+  }
+  setState(si, 'step');
+  const apts = buildArrows(si, isNew);
+  frame(pts.concat(apts), best.az, el, W / H, 1.04);
+  scene.background = WHITE;
+  renderer.render(scene, camera);
+  arrows.clear();
+  return { img: renderer.domElement.toDataURL('image/jpeg', 0.88), az: best.az, el };
+};
+
+// A finished sub-assembly on its own (for the mount steps).
+window.renderSub = (sub, az, el, w, h) => {
+  sub = sub.toLowerCase();
+  for (const p of parts) {
+    p.g.visible = p.ctx === sub;
+    for (const { c, orig } of p.meshes) { c.visible = true; c.material = orig; }
+  }
+  renderer.setSize(w, h);
+  frame(visiblePoints(parts), az, el, w / h, 1.05);
+  scene.background = WHITE;
+  renderer.render(scene, camera);
+  const img = renderer.domElement.toDataURL('image/jpeg', 0.9);
+  renderer.setSize(W, H);
+  return img;
+};
+
+// One part on its own, for the parts lists.
+const thumbScene = new THREE.Scene();
+thumbScene.environment = scene.environment; thumbScene.environmentIntensity = 0.9;
+const tsun = sun.clone(); thumbScene.add(tsun);
+window.renderPart = (index, size) => {
+  const src = parts[index];
+  for (const { c, orig } of src.meshes) { c.visible = true; c.material = orig; }
+  const g = src.g.clone(true);
+  g.position.set(0, 0, 0); g.quaternion.identity(); g.scale.set(1, 1, 1);
+  const holder = new THREE.Group(); holder.rotation.x = Math.PI; holder.add(g);
+  thumbScene.add(holder); holder.updateMatrixWorld(true);
+  g.visible = true;
+  renderer.setSize(size, size);
+  const pts = [];
+  // small parts are drawn smaller than big ones (but still readable), so a step's parts keep some sense of size
+  const pb = new THREE.Box3().setFromObject(holder), pc = pb.getCenter(new THREE.Vector3());
+  const big = Math.max(...pb.getSize(new THREE.Vector3()).toArray());
+  const ext = Math.max(big, 40 + 0.4 * big) / 2;
+  pts.push(...corners(new THREE.Box3(pc.clone().subScalar(ext), pc.clone().addScalar(ext))));
+  frame(pts, -35, 28, 1, 1.0);
+  renderer.render(thumbScene, camera);
+  const img = renderer.domElement.toDataURL('image/png');
+  thumbScene.remove(holder);
+  renderer.setSize(W, H);
+  return img;
+};
+window.ready = true;
+</script></body></html>

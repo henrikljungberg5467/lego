@@ -1,0 +1,48 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head><body>
+<script type="module">
+// Exports the LDraw model as GLB (colours, one node per part, metres) and STL (one mesh, millimetres).
+import * as THREE from 'three';
+import { LDrawLoader } from 'three/addons/loaders/LDrawLoader.js';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { STLExporter } from 'three/addons/exporters/STLExporter.js';
+import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
+
+const LDU = 0.4;   // mm
+const b64 = buf => { let s = ''; const u = new Uint8Array(buf); for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode(...u.subarray(i, i + 0x8000)); return btoa(s); };
+
+window.exportModel = async () => {
+  const loader = new LDrawLoader();
+  loader.setPartsLibraryPath('/ldraw/');
+  await loader.preloadMaterials('/ldraw/LDConfig.ldr');
+  const model = await loader.loadAsync('/model/z315e.mpd');
+  // edge lines use a custom shader that glTF cannot hold; the shaded surfaces are kept
+  const drop = [];
+  model.traverse(c => { if (c.isLineSegments || c.isLine) drop.push(c); });
+  drop.forEach(c => c.parent.remove(c));
+  // index the geometry (shared between instances of the same part) and give nodes readable names
+  const done = new Map();
+  let tris = 0;
+  model.traverse(c => {
+    if (c.isGroup && c.userData.fileName) c.name = c.userData.fileName.replace(/\.(dat|ldr)$/i, '');
+    if (c.isMesh) {
+      if (!done.has(c.geometry)) done.set(c.geometry, mergeVertices(c.geometry));   // keeps the hard edges (normals differ)
+      c.geometry = done.get(c.geometry);
+      tris += c.geometry.index ? c.geometry.index.count / 3 : c.geometry.attributes.position.count / 3;
+    }
+  });
+  const root = new THREE.Group(); root.name = 'John Deere Z315E ZTrak (LEGO)';
+  model.rotation.x = Math.PI;                       // LDraw -Y up -> glTF +Y up
+  model.scale.setScalar(LDU / 1000);                // metres
+  root.add(model);
+  root.updateMatrixWorld(true);
+  const glb = await new GLTFExporter().parseAsync(root, { binary: true, onlyVisible: true });
+  model.scale.setScalar(LDU);                       // millimetres for STL
+  root.updateMatrixWorld(true);
+  const stl = new STLExporter().parse(root, { binary: true });
+  return { glb: b64(glb), stl: b64(stl.buffer), tris, unique: done.size };
+};
+window.ready = true;
+</script></body></html>
