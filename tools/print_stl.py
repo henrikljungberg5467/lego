@@ -1,9 +1,11 @@
 """Printable STL of single LDraw parts (millimetres, closed solid).
 
-LDraw parts are visual models: their surfaces are built from primitives and often have small cracks
-where those meet, so they are not closed solids. Here the part is voxelised (inside/outside by ray
-parity along three axes, majority vote), turned back into a surface with marching cubes and
-simplified. The part lies with its local Z axis vertical (a wheel or tyre lies flat on the bed).
+LDraw parts are visual models: their surfaces are built from primitives and often have cracks where
+those meet (up to a few tenths of a millimetre where a 16-sided circle meets a 48-sided one), so
+they are not closed solids. Here the surface is voxelised, the voxels are grown until the cracks
+close, everything not reachable from outside is filled, and the solid is shrunk back by the same
+amount (a morphological closing). Marching cubes turns it back into a surface, which is simplified
+without letting it open. The part lies with its local Z axis vertical (a wheel or tyre lies flat).
 
 With --halves the part is cut in two across its local Z axis (a tyre at its middle) and both halves
 are laid out on one plate, each with its outer side down: a tyre's halves then print without
@@ -23,13 +25,34 @@ import ldraw as L  # noqa: E402
 MM = 0.4  # mm per LDU
 
 
-def solid(part, res_mm):
+def solid(part, res_mm, close_mm=0.2):
     """Boolean voxel grid of the part's interior, and the position of voxel (0,0,0) in LDU."""
-    check.H = res_mm / MM
+    import trimesh
+    from scipy import ndimage
+    check.H = res_mm / MM                                  # voxel size in LDU (used by mesh() for the cut)
     tris = np.asarray(L.triangles(part + ".dat"), dtype=float).reshape(-1, 3, 3)
-    lo, hi = tris.reshape(-1, 3).min(0) - 2 * check.H, tris.reshape(-1, 3).max(0) + 2 * check.H
-    votes = sum(check._ray_fill(tris, lo, hi, ax).astype(np.uint8) for ax in range(3))
-    return votes >= 2, lo
+    surf = trimesh.Trimesh(tris.reshape(-1, 3), np.arange(len(tris) * 3).reshape(-1, 3), process=True)
+    pad = int(np.ceil(close_mm / res_mm)) + 2
+    h = check.H
+    lo = tris.reshape(-1, 3).min(0) - pad * h
+    shape = np.ceil((tris.reshape(-1, 3).max(0) + pad * h - lo) / h).astype(int) + 1
+    # surface voxels: points on every triangle at most half a voxel apart
+    shell = np.zeros(shape, dtype=bool)
+    tri = surf.triangles
+    n_of = np.ceil(np.max(np.linalg.norm(tri - np.roll(tri, 1, axis=1), axis=2), axis=1) / (h / 2)).astype(int)
+    for n in np.unique(n_of):
+        a, b = np.meshgrid(np.arange(n + 1), np.arange(n + 1), indexing="ij")
+        keep = a + b <= n
+        w = np.stack([a[keep], b[keep], n - a[keep] - b[keep]], axis=1) / max(n, 1)      # barycentric
+        sel = tri[n_of == n]
+        for chunk in np.array_split(sel, max(1, len(sel) * len(w) // 2_000_000)):
+            pts = np.einsum("pk,tkd->tpd", w, chunk).reshape(-1, 3)
+            idx = np.floor((pts - lo) / h).astype(int)
+            shell[idx[:, 0], idx[:, 1], idx[:, 2]] = True
+    k = int(np.ceil(close_mm / res_mm))
+    grown = ndimage.binary_dilation(shell, iterations=k) if k else shell
+    filled = ndimage.binary_fill_holes(grown)
+    return (ndimage.binary_erosion(filled, iterations=k, border_value=0) if k else filled) | shell, lo
 
 
 def mesh(part, res_mm=0.1, faces=150_000, half=None):
@@ -43,8 +66,13 @@ def mesh(part, res_mm=0.1, faces=150_000, half=None):
         zmid = (zc[vol.any(axis=(0, 1))].min() + zc[vol.any(axis=(0, 1))].max()) / 2
         vol = vol.copy()
         vol[:, :, (zc > zmid) if half == 0 else (zc < zmid)] = False
-    v = np.pad(vol, 1).astype(np.float32)
-    verts, tri, _, _ = measure.marching_cubes(v, 0.5, spacing=(res_mm,) * 3)
+    from scipy import ndimage
+    # a light blur of the voxels gives a smoother surface, which simplifies without opening up
+    v = ndimage.gaussian_filter(np.pad(vol, 2).astype(np.float32), 0.7)
+    # surface voxels are solid all the way through, so the solid reaches about half a voxel past the
+    # true surface; the level 0.75 of the blurred step (sigma 0.7 voxel) moves it back by that much
+    verts, tri, _, _ = measure.marching_cubes(v, 0.75, spacing=(res_mm,) * 3)
+    verts -= res_mm                                       # the extra padding voxel
     verts += (lo * MM) - res_mm * 0.5                     # voxel centres -> part coordinates (mm)
     # simplify, but never into an open or non-manifold surface: allow more triangles until it stays closed
     target = faces

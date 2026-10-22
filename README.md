@@ -34,11 +34,16 @@ En byggbar LEGO-modell av nollsvängsklipparen John Deere Z315E med 42-tums klip
 
 3D-filer: [`docs/z315e.glb`](docs/z315e.glb) har färger, en nod per del och verklig storlek. Den öppnas i till exempel Blender, Windows 3D-visare eller en webbläsarbaserad glTF-visare. [`docs/z315e.stl`](docs/z315e.stl) är hela modellen som ett enda nät i millimeter, utan färger. Den passar för rendering och CAD men går inte att 3D-skriva ut som den är, eftersom den består av 485 separata delar.
 
-**3D-utskrift av bakdäcken.** Bakdäcken (55976) finns inte på Pick a Brick och kan skrivas ut i flexibel TPU (Shore 95A) i stället för att köpas på BrickLink.
-- [`print/55976_bakdack_halvor.stl`](print/55976_bakdack_halvor.stl) är ett däck delat på mitten, med båda halvorna på en platta och ytterkanten nedåt. Halvorna skrivs ut utan stöd, läggs runt fälgen och limmas ihop med cyanoakrylatlim (superlim). Skriv ut plattan två gånger.
-- [`print/55976_bakdack.stl`](print/55976_bakdack.stl) är ett helt däck att lägga platt. Det behöver stöd inne i rännan där fälgen sitter, och sådant stöd är svårt att få bort i TPU.
-- Måtten är LEGOs: 56,8 mm i diameter och 25,6 mm brett. Filerna är slutna solider, gjorda med `tools/print_stl.py` ur LDraw-delen.
-- Förslag på inställningar: 0,2 mm lagerhöjd, 3–4 väggar, 20–30 % fyllning och låg hastighet (20–30 mm/s).
+**3D-utskrift av däcken.** Alla fyra däck kan skrivas ut i flexibel TPU (Shore 95A), så att de får samma material. Bakdäcken (55976) finns dessutom inte på Pick a Brick. Måtten är LEGOs, och filerna är slutna solider gjorda med `tools/print_stl.py` ur LDraw-delarna.
+
+| Fil | Däck | Utskrift |
+|---|---|---|
+| [`print/55976_bakdack_halvor.stl`](print/55976_bakdack_halvor.stl) | bakdäck, Ø 56,8 × 25,6 mm, delat på mitten | **rekommenderas**: utan stöd; halvorna läggs runt fälgen och limmas ihop med superlim; skriv ut plattan 2 gånger |
+| [`print/55976_bakdack.stl`](print/55976_bakdack.stl) | bakdäck, helt | behöver stöd inne i rännan där fälgen sitter |
+| [`print/58090_framdack.stl`](print/58090_framdack.stl) | framdäck, Ø 30,4 × 13,6 mm, helt | **rekommenderas**: massivt däck, utan stöd; skriv ut 2 |
+| [`print/58090_framdack_halvor.stl`](print/58090_framdack_halvor.stl) | framdäck, delat på mitten | om det helt utskrivna däcket är för styvt för att tränga över fälgen; limmas runt fälgen |
+
+Förslag på inställningar: 0,2 mm lagerhöjd, 3–4 väggar, 20–30 % fyllning och låg hastighet (20–30 mm/s). Fyllningen avgör hur mjukt däcket blir.
 
 Den enda ovanligare delen är den gröna Technic-balken 1 × 15 (32278). Den har funnits i sex set, bland annat LEGO 42157 John Deere 948L-II, och finns på Pick a Brick.
 
