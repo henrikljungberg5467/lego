@@ -51,6 +51,21 @@ h1 span { color: var(--deere); }
 .downloads a:focus-visible { outline: 2px solid var(--deere); outline-offset: 2px; }
 .downloads a.primary { background: var(--deere); color: var(--deere-ink); border-color: var(--deere); }
 .downloads small { font-size: 12px; font-weight: 400; opacity: .8; margin-left: 3px; }
+.downloads .more { position: relative; }
+.downloads summary { list-style: none; cursor: pointer; font: 600 13px var(--font-body); white-space: nowrap;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 6px 10px; }
+.downloads summary::-webkit-details-marker { display: none; }
+.downloads summary::after { content: " ▾"; }
+.downloads details[open] summary::after { content: " ▴"; }
+.downloads summary:hover { border-color: var(--deere); }
+.downloads summary:focus-visible { outline: 2px solid var(--deere); outline-offset: 2px; }
+.downloads .menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 10; width: 360px; display: grid; gap: 2px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px; box-shadow: 0 8px 28px rgba(0,0,0,.14); }
+.downloads .menu h4 { margin: 8px 6px 2px; font: 600 11px var(--font-body); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.downloads .menu h4:first-child { margin-top: 2px; }
+.downloads .menu a { display: block; white-space: normal; background: transparent; border-color: transparent; }
+.downloads .menu a:hover { border-color: var(--deere); }
+.downloads .menu small { display: block; margin: 2px 0 0; line-height: 1.35; }
 .stage { position: relative; min-height: 0; background: var(--stage); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
 .stage canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 .loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-family: var(--font-mono); font-size: 13px; }
@@ -81,6 +96,9 @@ input[type=range] { width: 100%; accent-color: var(--deere); }
 .pn { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
 .caption { padding: 8px 10px; font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--line); }
 @media (max-width: 820px) {
+  .downloads { margin-left: 0; }
+  .downloads .more[open] { flex-basis: 100%; }
+  .downloads .menu { position: static; width: auto; margin-top: 6px; box-shadow: none; }
   html, body { height: auto; }
   .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; height: auto; }
   .stage { height: 58vh; min-height: 300px; }
@@ -98,8 +116,19 @@ input[type=range] { width: 100%; accent-color: var(--deere); }
     </div>
     <nav class="downloads" aria-label="Ladda ner">
       <a class="primary" href="bygginstruktioner.pdf" download="Z315E_bygginstruktion.pdf">Bygginstruktion <small>PDF, 10 MB</small></a>
-      <a href="pick_a_brick.csv" download="Z315E_pick_a_brick.csv" title="Ladda upp på LEGO Pick a Brick (alla delar utom bakdäcken)">Pick a Brick-lista <small>CSV</small></a>
-      <a href="bricklink_inte_pa_pab.xml" download="Z315E_bakdack_bricklink.xml" title="Bakdäcken finns inte på Pick a Brick: ladda upp som önskelista på BrickLink">Bakdäck, BrickLink <small>XML</small></a>
+      <details class="more">
+        <summary>Fler filer</summary>
+        <div class="menu">
+          <h4>Köpa delar</h4>
+          <a href="pick_a_brick.csv" download="Z315E_pick_a_brick.csv"><b>Pick a Brick-lista</b><small>CSV · ladda upp på LEGO Pick a Brick (alla delar utom bakdäcken)</small></a>
+          <a href="bricklink_inte_pa_pab.xml" download="Z315E_bakdack_bricklink.xml"><b>Bakdäck från BrickLink</b><small>XML · önskelista på BrickLink, de finns inte på Pick a Brick</small></a>
+          <h4>3D-utskrift av däcken i TPU</h4>
+          <a href="55976_bakdack_halvor.stl" download="Z315E_bakdack_halvor.stl"><b>Bakdäck, två halvor</b><small>STL, 12 MB · utan stöd, limmas runt fälgen · skriv ut 2</small></a>
+          <a href="55976_bakdack.stl" download="Z315E_bakdack_helt.stl"><b>Bakdäck, helt</b><small>STL, 11 MB · behöver stöd i fälgrännan</small></a>
+          <a href="58090_framdack.stl" download="Z315E_framdack_helt.stl"><b>Framdäck, helt</b><small>STL, 8 MB · utan stöd · skriv ut 2</small></a>
+          <a href="58090_framdack_halvor.stl" download="Z315E_framdack_halvor.stl"><b>Framdäck, två halvor</b><small>STL, 10 MB · om det hela däcket är för styvt för fälgen</small></a>
+        </div>
+      </details>
     </nav>
   </header>
   <div class="stage" id="stage">
@@ -322,5 +351,8 @@ renderer.setAnimationLoop(now => {
   controls.update();
   renderer.render(scene, camera);
 });
+const more = document.querySelector('.downloads .more');
+addEventListener('click', e => { if (more.open && !more.contains(e.target)) more.open = false; });
+addEventListener('keydown', e => { if (e.key === 'Escape') more.open = false; });
 window.__viewer = { show, N: () => N, ok: () => parts.length === P.parts.length && parts.every((p, i) => p.part === P.parts[i][0]) };
 </script>

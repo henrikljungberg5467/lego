@@ -12,7 +12,10 @@ import ldraw as L  # noqa: E402
 import partsdb  # noqa: E402
 
 ROOT = L.ROOT
-DOWNLOADS = ("bygginstruktioner.pdf", "pick_a_brick.csv", "bricklink_inte_pa_pab.xml")   # linked from the page
+# files the page links to, served next to it (GitHub Pages copies the same files)
+DOWNLOADS = ("docs/bygginstruktioner.pdf", "docs/pick_a_brick.csv", "docs/bricklink_inte_pa_pab.xml",
+             "print/55976_bakdack_halvor.stl", "print/55976_bakdack.stl", "print/58090_framdack.stl",
+             "print/58090_framdack_halvor.stl")
 SECTIONS = {"rear_frame": "Bakram med hjullager", "rear_wheels": "Drivhjul", "floor": "Golv, fotstöd och lyftpedal",
             "front_frame": "Främre ram och tvärbalk", "casters": "Länkhjul", "deck": "Klippaggregat med knivar",
             "deck_hangers": "Upphängning och knopp", "body": "Kaross och stänkskärmar", "seat": "Förarstol",
@@ -45,8 +48,8 @@ def main():
         cols[c] = [SV.get(c, c), mm.group(1)]
     data = json.dumps({"names": names, "colors": cols, "plan": plan}, ensure_ascii=False, separators=(",", ":"))
     tpl = open(os.path.join(vdir, "index.template.html"), encoding="utf-8").read()
-    pdf = os.path.join(ROOT, "docs", "bygginstruktioner.pdf")
-    html = tpl.replace("__PARTDATA__", data).replace("__PDFSIZE__", f"{os.path.getsize(pdf) / 1e6:.0f} MB")
+    html = tpl.replace("__PARTDATA__", data)
+    html = re.sub(r"__SIZE:(.+?)__", lambda mm: f"{os.path.getsize(os.path.join(ROOT, mm.group(1))) / 1e6:.0f} MB", html)
     open(os.path.join(vdir, "index.html"), "w", encoding="utf-8").write(html)
     # local test copy that loads three.js from node_modules instead of the CDN
     tdir = os.path.join(ROOT, "tmp", "viewer_test")
@@ -55,8 +58,8 @@ def main():
     open(os.path.join(tdir, "index.html"), "w", encoding="utf-8").write("<!doctype html><meta charset=utf-8>" + local)
     for f in ("z315e_packed.mpd", "LDConfig.ldr"):
         shutil.copy(os.path.join(vdir, f), os.path.join(tdir, f))
-    for f in DOWNLOADS:   # served next to the page on GitHub Pages and in the artifact
-        shutil.copy(os.path.join(ROOT, "docs", f), os.path.join(tdir, f))
+    for f in DOWNLOADS:
+        shutil.copy(os.path.join(ROOT, f), os.path.join(tdir, os.path.basename(f)))
     print("viewer built:", os.path.getsize(os.path.join(vdir, "index.html")), "bytes html")
 
 

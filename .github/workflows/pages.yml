@@ -6,7 +6,7 @@ on:
   push:
     branches: [main]
     paths: ["viewer/**", "docs/bygginstruktioner.pdf", "docs/pick_a_brick.csv", "docs/bricklink_inte_pa_pab.xml",
-            ".github/workflows/pages.yml"]
+            "print/*.stl", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:
@@ -37,7 +37,7 @@ jobs:
           } > _site/index.html
           cp viewer/z315e_packed.mpd viewer/LDConfig.ldr _site/
           # filer som sidan länkar till för nedladdning
-          cp docs/bygginstruktioner.pdf docs/pick_a_brick.csv docs/bricklink_inte_pa_pab.xml _site/
+          cp docs/bygginstruktioner.pdf docs/pick_a_brick.csv docs/bricklink_inte_pa_pab.xml print/*.stl _site/
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
