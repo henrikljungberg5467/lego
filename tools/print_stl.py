@@ -55,8 +55,10 @@ def solid(part, res_mm, close_mm=0.2):
     return (ndimage.binary_erosion(filled, iterations=k, border_value=0) if k else filled) | shell, lo
 
 
-def mesh(part, res_mm=0.1, faces=150_000, half=None):
-    """half=None: the whole part; 0 or 1: the half below or above the middle of its local Z extent."""
+def mesh(part, res_mm=0.1, faces=150_000, half=None, up="z"):
+    """half=None: the whole part; 0 or 1: the half below or above the middle of its local Z extent.
+    up="z": the part's local Z axis is vertical (wheels, tyres, gears, bushes lie flat);
+    up="y": its LDraw up (-Y) is up (bricks and plates studs up, beams flat, axles and pins lying)."""
     import fast_simplification
     import trimesh
     from skimage import measure
@@ -85,9 +87,9 @@ def mesh(part, res_mm=0.1, faces=150_000, half=None):
         if m.is_watertight or len(tri) <= target:
             break
         target = int(target * 1.5)
-    # turn over about X (LDraw -Y up -> +Y, Z -> -Z: no mirroring); local Z stays vertical, so a
-    # wheel or tyre lies flat; then put it on the bed at the origin
-    m.apply_transform(trimesh.transformations.rotation_matrix(np.pi, [1, 0, 0]))
+    # rotate about X (never mirror): by 180° local Z stays vertical, by -90° LDraw -Y becomes up;
+    # then put it on the bed at the origin
+    m.apply_transform(trimesh.transformations.rotation_matrix(np.pi if up == "z" else -np.pi / 2, [1, 0, 0]))
     if half is not None:
         # outer side down: the cut face (the flat ring with the largest area at one end) goes on top
         top = m.triangles_center[:, 2] > m.bounds[1][2] - 0.05
