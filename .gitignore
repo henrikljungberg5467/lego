@@ -3,3 +3,6 @@ ldraw
 __pycache__/
 *.pyc
 /tmp/
+
+# uppackade STL-mappar från tools/print_parts.py (bara zip-filerna versionshanteras)
+print/delar/*/

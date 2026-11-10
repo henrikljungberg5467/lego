@@ -45,6 +45,21 @@ En byggbar LEGO-modell av nollsvängsklipparen John Deere Z315E med 42-tums klip
 
 Förslag på inställningar: 0,2 mm lagerhöjd, 3–4 väggar, 20–30 % fyllning och låg hastighet (20–30 mm/s). Fyllningen avgör hur mjukt däcket blir.
 
+**3D-utskrift av alla delar, per färg.** [`print/delar/`](print/delar/) har en zip per färg. Varje zip innehåller en sluten STL per sorts del, lagd för utskrift, och en `LISTA.md` med hur många av varje som behövs. Svart och grönt är uppdelat i vanliga delar och Technic, eftersom Technic-delarna behöver andra inställningar.
+
+| Zip | Delar | Sorter | Tips |
+|---|---:|---:|---|
+| `svart-vanliga.zip` | 150 | 33 | klossar, plattor och tiles: vanliga inställningar |
+| `svart-technic.zip` | 51 | 16 | stift, axlar, kopplingar: fler väggar, hög fyllnad, gärna PETG |
+| `gron-vanliga.zip` | 159 | 36 | |
+| `gron-technic.zip` | 11 | 4 | balkar och kryssblock: håll hålen måttriktiga |
+| `gul.zip` | 62 | 16 | med fälgarna |
+| `ljusgra.zip` | 36 | 3 | axlar och bussningar |
+| `morkgra.zip` | 11 | 5 | kugghjul, kloss 1 × 8, axel med stopp |
+| `orange.zip` | 1 | 1 | |
+
+Däcken ligger för sig i `print/`, för TPU. Delarna har LEGOs nominella mått utan glapp, så skriv först ut några testdelar och justera passformen med sliceprogrammets XY-kompensation. Nya delmängder, till exempel per byggsektion, görs med `tools/print_parts.py` (`--list` visar vad som går att välja).
+
 Den enda ovanligare delen är den gröna Technic-balken 1 × 15 (32278). Den har funnits i sex set, bland annat LEGO 42157 John Deere 948L-II, och finns på Pick a Brick.
 
 ## Hur modellen är kontrollerad
@@ -81,7 +96,8 @@ tools/build_viewer.py packar modellen med alla LDraw-delar för visaren
 tools/instructions.py bygginstruktionen som PDF (bilder via instructions.mjs/.html)
 tools/export3d.mjs    GLB- och STL-export
 tools/print_stl.py    utskrivbar STL av enskilda delar (sluten solid, valfritt delad i halvor)
-print/                STL-filer för 3D-utskrift
+tools/print_parts.py  STL för alla delar eller en delmängd (sektion, färg, typ, delnummer)
+print/                STL-filer för 3D-utskrift (däck, och alla delar per färg i print/delar/)
 ```
 
 ### Generera om
