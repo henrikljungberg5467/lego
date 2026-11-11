@@ -5,7 +5,10 @@ of how many are needed and in which colours (counted within the subset). Wheels,
 bushes and axle connectors lie with their axis vertical; everything else stands as in the model
 (studs up, beams flat, axles and pins lying down).
 
-Usage: python3 tools/print_parts.py [filters] [--name NAME] [--zip]
+Studs, tubes and posts use LEGO's real diameters (see print_stl.print_triangles); --clutch MM adds to
+all three to tune the fit to a printer (default 0).
+
+Usage: python3 tools/print_parts.py [filters] [--name NAME] [--clutch MM] [--zip]
        python3 tools/print_parts.py --list          what the filters can choose from
 Filters (combine freely; a part must match all of them):
   --section deck,body      build sections (see --list)
@@ -98,6 +101,7 @@ def main():
     chosen = [x for x in items if all(f(x) for f in filters)]
     if not chosen:
         sys.exit("no parts match the filters")
+    clutch = float(arg("--clutch") or 0)
     name = arg("--name") or "-".join(slug(arg(f)) for f in ("--section", "--color", "--kind", "--parts") if arg(f)) or "alla"
     out = os.path.join(OUT, name)
     os.makedirs(out, exist_ok=True)
@@ -110,7 +114,7 @@ def main():
         lo, hi = L.bbox(part + ".dat")
         size = max(hi - lo) * print_stl.MM
         faces = 8_000 if size < 20 else 16_000 if size < 50 else 30_000
-        m = print_stl.mesh(part, 0.1, faces, up="z" if header.startswith(AXIS_UP) else "y")
+        m = print_stl.mesh(part, 0.1, faces, up="z" if header.startswith(AXIS_UP) else "y", clutch=clutch)
         fname = f"{part}-{slug(header)}.stl"
         m.export(os.path.join(out, fname))
         colours = ", ".join(f"{c}× {partlist.COLORS[k][2].lower()}" for k, c in cols[part].most_common())
@@ -118,7 +122,9 @@ def main():
         print(f"{fname:60s} {print_stl.report(m)}", flush=True)
     with open(os.path.join(out, "LISTA.md"), "w") as fh:
         fh.write(f"# Delar för 3D-utskrift: {name}\n\n{len(chosen)} delar, {len(rows)} sorter. Varje fil är en sluten solid "
-                 "i millimeter, lagd för utskrift. Antal och färger gäller den här delmängden.\n\n"
+                 "i millimeter, lagd för utskrift. Antal och färger gäller den här delmängden. Knoppar "
+                 f"{print_stl.STUD_MM + clutch:.2f} mm, rör {print_stl.TUBE_MM + clutch:.2f} mm, stolpar "
+                 f"{print_stl.POST_MM + clutch:.2f} mm (grepp {clutch:+.2f} mm).\n\n"
                  "| Fil | Del | Antal | Färger | Storlek (mm) |\n|---|---|---:|---|---|\n")
         for fname, header, n, colours, m in rows:
             fh.write(f"| `{fname}` | {header} | {n} | {colours} | {' × '.join(f'{e:.1f}' for e in m.extents)} |\n")

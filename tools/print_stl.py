@@ -24,13 +24,58 @@ import ldraw as L  # noqa: E402
 
 MM = 0.4  # mm per LDU
 
+# Connection geometry for printing. LDraw draws circles as 16-gons (a stud measures 4.71-4.80 mm across,
+# a tube 6.28-6.40 mm) and its tubes 6.40 mm wide, where LEGO's are 6.51 mm: studs then miss the tubes by
+# about 0.1 mm and are held by the walls alone. For printing, circles use the 48-gon primitives and studs,
+# tubes and the solid posts of 1 x N parts get LEGO's diameters. `clutch` (mm) adds to all three, to tune
+# the fit to a printer: the grip against tubes grows by `clutch`, against walls by half of it.
+STUD_MM, TUBE_MM, POST_MM = 4.8, 6.51, 3.2
+STUDS = ("stud.dat", "stud2.dat", "stud2a.dat")          # outer radius 6 LDU (stud2: hollow stud)
+TUBES = ("stud4.dat", "stud4a.dat", "stud4h.dat", "stud4s.dat")
+POSTS = ("stud3.dat", "stud3a.dat")
 
-def solid(part, res_mm, close_mm=0.2):
-    """Boolean voxel grid of the part's interior, and the position of voxel (0,0,0) in LDU."""
+
+def print_triangles(name, clutch=0.0):
+    """Like ldraw.triangles, with the connection geometry above."""
+    from functools import lru_cache
+    idx = L.lib_index()
+
+    @lru_cache(maxsize=None)
+    def tris(name):
+        refs, t, quads = L.parsed(name)
+        out = [t]
+        if len(quads):
+            out += [quads[:, [0, 1, 2]], quads[:, [0, 2, 3]]]
+        for _, M, sub in refs:
+            if "/" not in sub and "48/" + sub in idx:
+                sub = "48/" + sub
+            if not L.find(sub):
+                continue
+            M = M.copy()
+            radial = abs(M[0, 0])
+            if name in STUDS and abs(radial - 6) < 1e-6:          # the stud's outside (radius 6 LDU)
+                M[[0, 2], :3] *= (STUD_MM + clutch) / 2 / MM / 6
+            elif name in TUBES and abs(radial - 8) < 1e-6:        # outer wall of the tube (radius 8 LDU)
+                M[[0, 2], :3] *= (TUBE_MM + clutch) / 2 / MM / 8
+            elif name in POSTS and abs(radial - 4) < 1e-6:        # the solid post (radius 4 LDU)
+                M[[0, 2], :3] *= (POST_MM + clutch) / 2 / MM / 4
+            st = tris(sub)
+            if len(st):
+                out.append((st.reshape(-1, 3) @ M[:3, :3].T + M[:3, 3]).reshape(-1, 3, 3))
+        out = [o for o in out if len(o)]
+        return np.concatenate(out) if out else np.zeros((0, 3, 3))
+
+    return tris(name)
+
+
+def solid(part, res_mm, close_mm=0.2, clutch=None):
+    """Boolean voxel grid of the part's interior, and the position of voxel (0,0,0) in LDU.
+    clutch=None: LDraw's geometry as it is; a number: printing geometry (see print_triangles)."""
     import trimesh
     from scipy import ndimage
     check.H = res_mm / MM                                  # voxel size in LDU (used by mesh() for the cut)
-    tris = np.asarray(L.triangles(part + ".dat"), dtype=float).reshape(-1, 3, 3)
+    raw = L.triangles(part + ".dat") if clutch is None else print_triangles(part + ".dat", clutch)
+    tris = np.asarray(raw, dtype=float).reshape(-1, 3, 3)
     surf = trimesh.Trimesh(tris.reshape(-1, 3), np.arange(len(tris) * 3).reshape(-1, 3), process=True)
     pad = int(np.ceil(close_mm / res_mm)) + 2
     h = check.H
@@ -55,14 +100,14 @@ def solid(part, res_mm, close_mm=0.2):
     return (ndimage.binary_erosion(filled, iterations=k, border_value=0) if k else filled) | shell, lo
 
 
-def mesh(part, res_mm=0.1, faces=150_000, half=None, up="z"):
+def mesh(part, res_mm=0.1, faces=150_000, half=None, up="z", clutch=None):
     """half=None: the whole part; 0 or 1: the half below or above the middle of its local Z extent.
     up="z": the part's local Z axis is vertical (wheels, tyres, gears, bushes lie flat);
     up="y": its LDraw up (-Y) is up (bricks and plates studs up, beams flat, axles and pins lying)."""
     import fast_simplification
     import trimesh
     from skimage import measure
-    vol, lo = solid(part, res_mm)
+    vol, lo = solid(part, res_mm, clutch=clutch)
     if half is not None:
         zc = lo[2] + (np.arange(vol.shape[2]) + 0.5) * check.H
         zmid = (zc[vol.any(axis=(0, 1))].min() + zc[vol.any(axis=(0, 1))].max()) / 2
