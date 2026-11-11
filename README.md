@@ -47,11 +47,11 @@ Förslag på inställningar: 0,2 mm lagerhöjd, 3–4 väggar, 20–30 % fyllnin
 
 **Grepp vid 3D-utskrift.** LDraw ritar knoppar och rör som 16-hörningar och rören 6,40 mm breda, mot LEGOs 6,51 mm. I utskrivna delar når knopparna därför inte fram till rören och hålls bara av väggarna. `tools/print_stl.py` bygger nu knoppar (4,8 mm), rör (6,51 mm) och stolpar i 1 × N-delar (3,2 mm) med LEGOs mått och 48-hörniga cirklar. En greppinställning ökar alla tre för att passa skrivaren.
 
-[`print/grepptest/`](print/grepptest/) har plattorna 2 × 4 och 1 × 2 med grepp ±0, +0,05, +0,10 och +0,15 mm. Nivån är ingraverad på ena långsidan (till exempel "0.05"). Skriv ut två av varje nivå, tryck ihop dem och välj den nivå som sitter bäst. Färgzipparna nedan görs sedan om med den nivån (`tools/print_parts.py --clutch …`). De som ligger där nu har ännu LDraw-måtten.
+[`print/grepptest/`](print/grepptest/) har plattorna 2 × 4 och 1 × 2 med grepp ±0, +0,05, +0,10 och +0,15 mm. Nivån är ingraverad på ena långsidan (till exempel "0.05"). Skriv ut två av varje nivå, tryck ihop dem och välj den nivå som sitter bäst. Färgzipparna nedan görs med den nivån (`tools/print_parts.py --clutch …`).
 
-Version 2 av testkitet (`…-v2-grepp-0.00` och `…-v2-grepp-0.05`, märkta "v2 0.00" och "v2 0.05") har dessutom 0,04 mm spel på varje sida, som Mecabricks delar: en platta 1 × 2 mäter 15,92 × 7,92 mm i stället för 16,05 × 8,06. Den har också skarpa inre hörn. Den första versionen hade hålkälar på 0,2 mm vid knopparnas fot och under taket, som kunde hindra plattorna från att gå ner helt.
+Version 2 av testkitet, där "v2 0.00" satt bäst och nu används för färgzipparna, (`…-v2-grepp-0.00` och `…-v2-grepp-0.05`, märkta "v2 0.00" och "v2 0.05") har dessutom 0,04 mm spel på varje sida, som Mecabricks delar: en platta 1 × 2 mäter 15,92 × 7,92 mm i stället för 16,05 × 8,06. Den har också skarpa inre hörn. Den första versionen hade hålkälar på 0,2 mm vid knopparnas fot och under taket, som kunde hindra plattorna från att gå ner helt.
 
-**3D-utskrift av alla delar, per färg.** [`print/delar/`](print/delar/) har en zip per färg. Varje zip innehåller en sluten STL per sorts del, lagd för utskrift, och en `LISTA.md` med hur många av varje som behövs. Svart och grönt är uppdelat i vanliga delar och Technic, eftersom Technic-delarna behöver andra inställningar.
+**3D-utskrift av alla delar, per färg.** [`print/delar/`](print/delar/) har en zip per färg, med 114 STL-filer för modellens 82 sorters delar. Varje zip innehåller en sluten STL per sorts del, lagd för utskrift, och en `LISTA.md` med hur många av varje som behövs. Delarna har testkitets v2-mått: knoppar 4,8 mm, rör 6,51 mm, stolpar 3,2 mm och 0,04 mm spel per sida. De är gjorda med 0,05 mm upplösning. Svart och grönt är uppdelat i vanliga delar och Technic, eftersom Technic-delarna behöver andra inställningar.
 
 | Zip | Delar | Sorter | Tips |
 |---|---:|---:|---|
@@ -64,7 +64,7 @@ Version 2 av testkitet (`…-v2-grepp-0.00` och `…-v2-grepp-0.05`, märkta "v2
 | `morkgra.zip` | 11 | 5 | kugghjul, kloss 1 × 8, axel med stopp |
 | `orange.zip` | 1 | 1 | |
 
-Däcken ligger för sig i `print/`, för TPU. Delarna har LEGOs nominella mått utan glapp, så skriv först ut några testdelar och justera passformen med sliceprogrammets XY-kompensation. Nya delmängder, till exempel per byggsektion, görs med `tools/print_parts.py` (`--list` visar vad som går att välja).
+Däcken ligger för sig i `print/`, för TPU. Technic-hålen och stiften är inte kalibrerade: sitter de för löst eller för hårt, justera med sliceprogrammets hålkompensation. Nya delmängder, till exempel per byggsektion, görs med `tools/print_parts.py` (`--list` visar vad som går att välja).
 
 Den enda ovanligare delen är den gröna Technic-balken 1 × 15 (32278). Den har funnits i sex set, bland annat LEGO 42157 John Deere 948L-II, och finns på Pick a Brick.
 
@@ -112,6 +112,7 @@ Verktygen behöver LDraw-biblioteket, [LDCad Shadow Library](https://github.com/
 
 ```sh
 npm install                                   # three.js + playwright
+pip install trimesh scikit-image scipy fast-simplification pymeshlab   # för tools/print_*.py (pymeshlab behöver libopengl0)
 python3 model/z315e.py                        # skriver model/z315e.mpd
 python3 tools/check.py model/z315e.mpd        # anslutningar, kollisioner, färger
 python3 tools/partlist.py model/z315e.mpd docs
