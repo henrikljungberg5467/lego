@@ -18,6 +18,7 @@ Filters (combine freely; a part must match all of them):
 """
 import os
 import re
+import shutil
 import sys
 from collections import Counter, defaultdict
 
@@ -26,9 +27,11 @@ import buildplan  # noqa: E402
 import ldraw as L  # noqa: E402
 import partlist  # noqa: E402
 import print_stl  # noqa: E402
+import trimesh  # noqa: E402
 from instructions import SECTIONS  # noqa: E402
 
 OUT = os.path.join(L.ROOT, "print", "delar")
+CACHE = os.path.join(L.ROOT, "tmp", "stlcache")
 AXIS_UP = ("Technic Gear", "Tyre", "Wheel", "Technic Bush", "Technic Connector (Axle/Bush)", "Technic Axle Joiner")
 
 
@@ -115,9 +118,18 @@ def main():
         lo, hi = L.bbox(part + ".dat")
         size = max(hi - lo) * print_stl.MM
         faces = 8_000 if size < 20 else 16_000 if size < 50 else 30_000
-        m = print_stl.mesh(part, res, faces, up="z" if header.startswith(AXIS_UP) else "y", clutch=clutch)
+        up = "z" if header.startswith(AXIS_UP) else "y"
         fname = f"{part}-{slug(header)}.stl"
-        m.export(os.path.join(out, fname))
+        # the same part in several colours is made once (tmp/stlcache, keyed by every setting)
+        cached = os.path.join(CACHE, f"{part}-r{res}-c{clutch}-f{faces}-{up}.stl")
+        if os.path.exists(cached):
+            m = trimesh.load(cached)
+        else:
+            m = print_stl.mesh(part, res, faces, up=up, clutch=clutch)
+            os.makedirs(CACHE, exist_ok=True)
+            m.export(cached + ".part.stl")
+            os.replace(cached + ".part.stl", cached)
+        shutil.copyfile(cached, os.path.join(out, fname))
         colours = ", ".join(f"{c}× {partlist.COLORS[k][2].lower()}" for k, c in cols[part].most_common())
         rows.append((fname, header, sum(cols[part].values()), colours, m))
         print(f"{fname:60s} {print_stl.report(m)}", flush=True)
