@@ -49,6 +49,8 @@ Förslag på inställningar: 0,2 mm lagerhöjd, 3–4 väggar, 20–30 % fyllnin
 
 [`print/grepptest/`](print/grepptest/) har plattorna 2 × 4 och 1 × 2 med grepp ±0, +0,05, +0,10 och +0,15 mm. Nivån är ingraverad på ena långsidan (till exempel "0.05"). Skriv ut två av varje nivå, tryck ihop dem och välj den nivå som sitter bäst. Färgzipparna nedan görs sedan om med den nivån (`tools/print_parts.py --clutch …`). De som ligger där nu har ännu LDraw-måtten.
 
+Version 2 av testkitet (`…-v2-grepp-0.00` och `…-v2-grepp-0.05`, märkta "v2 0.00" och "v2 0.05") har dessutom 0,04 mm spel på varje sida, som Mecabricks delar: en platta 1 × 2 mäter 15,92 × 7,92 mm i stället för 16,05 × 8,06. Den har också skarpa inre hörn. Den första versionen hade hålkälar på 0,2 mm vid knopparnas fot och under taket, som kunde hindra plattorna från att gå ner helt.
+
 **3D-utskrift av alla delar, per färg.** [`print/delar/`](print/delar/) har en zip per färg. Varje zip innehåller en sluten STL per sorts del, lagd för utskrift, och en `LISTA.md` med hur många av varje som behövs. Svart och grönt är uppdelat i vanliga delar och Technic, eftersom Technic-delarna behöver andra inställningar.
 
 | Zip | Delar | Sorter | Tips |

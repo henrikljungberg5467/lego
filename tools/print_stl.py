@@ -94,10 +94,25 @@ def solid(part, res_mm, close_mm=0.2, clutch=None):
             pts = np.einsum("pk,tkd->tpd", w, chunk).reshape(-1, 3)
             idx = np.floor((pts - lo) / h).astype(int)
             shell[idx[:, 0], idx[:, 1], idx[:, 2]] = True
-    k = int(np.ceil(close_mm / res_mm))
-    grown = ndimage.binary_dilation(shell, iterations=k) if k else shell
-    filled = ndimage.binary_fill_holes(grown)
-    return (ndimage.binary_erosion(filled, iterations=k, border_value=0) if k else filled) | shell, lo
+    def closed(k):
+        """Grow the surface by k voxels so cracks close, fill what the outside cannot reach, then let the
+        outside flow back up to the surface voxels (6-connected, so it cannot cross them). Shrinking back
+        by erosion instead would round every inner corner, such as the foot of a stud."""
+        grown = ndimage.binary_dilation(shell, iterations=k) if k else shell
+        outside = ~ndimage.binary_fill_holes(grown)
+        for _ in range(k + 1):
+            outside = ndimage.binary_dilation(outside) & ~shell
+        return ~outside
+
+    # the smallest closing that fills the part as well as the full one: none at all for most parts, whose
+    # surfaces only have hairline cracks, so their inner corners stay sharp
+    kmax = int(np.ceil(close_mm / res_mm))
+    full = closed(kmax)
+    for k in range(kmax):
+        vol = closed(k)
+        if vol.sum() >= 0.995 * full.sum():
+            return vol, lo
+    return full, lo
 
 
 def engrave(vol, lo, text, height_mm=2.6, depth_mm=0.4):
@@ -128,6 +143,26 @@ def engrave(vol, lo, text, height_mm=2.6, depth_mm=0.4):
     return vol
 
 
+SIDE_GAP_MM = 0.04   # per side, as in Mecabricks' parts (LEGO's own are about 0.1)
+
+
+def side_clearance(verts, part, gap=SIDE_GAP_MM, band=0.3):
+    """Move the outer faces of the part's sides inwards, so that its outside measures a whole number of
+    studs minus 2 * gap, on the axes where LDraw draws it exactly a whole number of studs long. Only
+    points within `band` mm of an outer face move (studs, holes and the underside stay where they are)."""
+    lo, hi = L.bbox(part + ".dat")
+    for ax in (0, 2):                                         # LDraw X and Z: the horizontal axes
+        n = (hi[ax] - lo[ax]) / 20
+        if abs(n - round(n)) > 1e-3 or round(n) < 1:
+            continue
+        a, b = verts[:, ax].min(), verts[:, ax].max()
+        target_a, target_b = lo[ax] * MM + gap, hi[ax] * MM - gap
+        wa = np.clip(1 - (verts[:, ax] - a) / band, 0, 1)    # 1 on the outer face, 0 at band mm inside
+        wb = np.clip(1 - (b - verts[:, ax]) / band, 0, 1)
+        verts[:, ax] += wa * (target_a - a) - wb * (b - target_b)
+    return verts
+
+
 def mesh(part, res_mm=0.1, faces=150_000, half=None, up="z", clutch=None, label=None):
     """half=None: the whole part; 0 or 1: the half below or above the middle of its local Z extent.
     up="z": the part's local Z axis is vertical (wheels, tyres, gears, bushes lie flat);
@@ -151,6 +186,8 @@ def mesh(part, res_mm=0.1, faces=150_000, half=None, up="z", clutch=None, label=
     verts, tri, _, _ = measure.marching_cubes(v, 0.75, spacing=(res_mm,) * 3)
     verts -= res_mm                                       # the extra padding voxel
     verts += (lo * MM) - res_mm * 0.5                     # voxel centres -> part coordinates (mm)
+    if clutch is not None:
+        verts = side_clearance(verts, part)
     # simplify, but never into an open or non-manifold surface: allow more triangles until it stays closed
     target = faces
     while True:
