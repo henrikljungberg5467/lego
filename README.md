@@ -47,7 +47,7 @@ Förslag på inställningar: 0,2 mm lagerhöjd, 3–4 väggar, 20–30 % fyllnin
 
 **Grepp vid 3D-utskrift.** LDraw ritar knoppar och rör som 16-hörningar och rören 6,40 mm breda, mot LEGOs 6,51 mm. I utskrivna delar når knopparna därför inte fram till rören och hålls bara av väggarna. `tools/print_stl.py` bygger nu knoppar (4,8 mm), rör (6,51 mm) och stolpar i 1 × N-delar (3,2 mm) med LEGOs mått och 48-hörniga cirklar. En greppinställning ökar alla tre för att passa skrivaren.
 
-[`print/grepptest/`](print/grepptest/) har plattorna 2 × 4 och 1 × 2 med grepp ±0, +0,05, +0,10 och +0,15 mm. Skriv ut två av varje nivå, tryck ihop dem och välj den nivå som sitter bäst. Färgzipparna nedan görs sedan om med den nivån (`tools/print_parts.py --clutch …`). De som ligger där nu har ännu LDraw-måtten.
+[`print/grepptest/`](print/grepptest/) har plattorna 2 × 4 och 1 × 2 med grepp ±0, +0,05, +0,10 och +0,15 mm. Nivån är ingraverad på ena långsidan (till exempel "0.05"). Skriv ut två av varje nivå, tryck ihop dem och välj den nivå som sitter bäst. Färgzipparna nedan görs sedan om med den nivån (`tools/print_parts.py --clutch …`). De som ligger där nu har ännu LDraw-måtten.
 
 **3D-utskrift av alla delar, per färg.** [`print/delar/`](print/delar/) har en zip per färg. Varje zip innehåller en sluten STL per sorts del, lagd för utskrift, och en `LISTA.md` med hur många av varje som behövs. Svart och grönt är uppdelat i vanliga delar och Technic, eftersom Technic-delarna behöver andra inställningar.
 

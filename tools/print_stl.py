@@ -100,7 +100,35 @@ def solid(part, res_mm, close_mm=0.2, clutch=None):
     return (ndimage.binary_erosion(filled, iterations=k, border_value=0) if k else filled) | shell, lo
 
 
-def mesh(part, res_mm=0.1, faces=150_000, half=None, up="z", clutch=None):
+def engrave(vol, lo, text, height_mm=2.6, depth_mm=0.4):
+    """Engrave `text` into the part's +Z side (LDraw), below the studs (y > 0), readable from outside."""
+    from PIL import Image, ImageDraw, ImageFont
+    h = check.H
+    z = lo[2] + (np.arange(vol.shape[2]) + 0.5) * h
+    y = lo[1] + (np.arange(vol.shape[1]) + 0.5) * h
+    x = lo[0] + (np.arange(vol.shape[0]) + 0.5) * h
+    filled_z = z[vol.any(axis=(0, 1))]
+    face = filled_z.max()                                           # the outside of the +Z wall
+    body = y[(y > 0) & vol.any(axis=(0, 2))]                        # side below the studs
+    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 200)
+    box = font.getbbox(text)
+    img = Image.new("L", (box[2] - box[0] + 20, box[3] - box[1] + 20), 0)
+    ImageDraw.Draw(img).text((10 - box[0], 10 - box[1]), text, fill=255, font=font)
+    rows = int(round(height_mm / MM / h))
+    cols = int(round(rows * img.width / img.height))
+    mask = np.array(img.resize((cols, rows), Image.LANCZOS)) > 110  # [row, col], row 0 at the top
+    yc = (body.min() + body.max()) / 2                              # centre of the side, vertically
+    xc = (x[vol.any(axis=(1, 2))].min() + x[vol.any(axis=(1, 2))].max()) / 2
+    iy0 = int(np.argmin(np.abs(y - (yc - rows * h / 2))))           # LDraw -Y is up: row 0 = smallest y
+    ix0 = int(np.argmin(np.abs(x - (xc + cols * h / 2))))           # seen from +Z, text runs towards -X
+    k = (z > face - depth_mm / MM) & (z <= face + h)
+    for r in range(rows):
+        for c in np.nonzero(mask[r])[0]:
+            vol[ix0 - c, iy0 + r, k] = False
+    return vol
+
+
+def mesh(part, res_mm=0.1, faces=150_000, half=None, up="z", clutch=None, label=None):
     """half=None: the whole part; 0 or 1: the half below or above the middle of its local Z extent.
     up="z": the part's local Z axis is vertical (wheels, tyres, gears, bushes lie flat);
     up="y": its LDraw up (-Y) is up (bricks and plates studs up, beams flat, axles and pins lying)."""
@@ -108,6 +136,8 @@ def mesh(part, res_mm=0.1, faces=150_000, half=None, up="z", clutch=None):
     import trimesh
     from skimage import measure
     vol, lo = solid(part, res_mm, clutch=clutch)
+    if label:
+        vol = engrave(vol.copy(), lo, label)
     if half is not None:
         zc = lo[2] + (np.arange(vol.shape[2]) + 0.5) * check.H
         zmid = (zc[vol.any(axis=(0, 1))].min() + zc[vol.any(axis=(0, 1))].max()) / 2
