@@ -188,17 +188,31 @@ def mesh(part, res_mm=0.1, faces=150_000, half=None, up="z", clutch=None, label=
     verts += (lo * MM) - res_mm * 0.5                     # voxel centres -> part coordinates (mm)
     if clutch is not None:
         verts = side_clearance(verts, part)
-    # simplify, but never into an open or non-manifold surface: allow more triangles until it stays closed
+    # simplify without changing the topology (MeshLab's quadric edge collapse), so the surface stays one
+    # closed solid; fast_simplification can pinch thin places into edges shared by four faces
+    m = None
+    if len(tri) > faces:
+        try:
+            import pymeshlab
+            ms = pymeshlab.MeshSet()
+            ms.add_mesh(pymeshlab.Mesh(np.asarray(verts, float), np.asarray(tri, np.int32)))
+            ms.meshing_decimation_quadric_edge_collapse(targetfacenum=faces, preservetopology=True,
+                                                        preservenormal=True, qualitythr=0.3, planarquadric=True)
+            cur = ms.current_mesh()
+            m = trimesh.Trimesh(cur.vertex_matrix(), cur.face_matrix(), process=True)
+            if not m.is_watertight:
+                m = None
+        except ImportError:
+            pass
     target = faces
-    while True:
+    while m is None:                  # fallback: allow more triangles until the surface stays closed
         if len(tri) > target:
             v2, t2 = fast_simplification.simplify(verts.astype(np.float32), tri.astype(np.int32), 1 - target / len(tri))
         else:
             v2, t2 = verts, tri
         m = trimesh.Trimesh(v2, t2, process=True)
-        if m.is_watertight or len(tri) <= target:
-            break
-        target = int(target * 1.5)
+        if not m.is_watertight and len(tri) > target:
+            m, target = None, int(target * 1.5)
     # rotate about X (never mirror): by 180° local Z stays vertical, by -90° LDraw -Y becomes up;
     # then put it on the bed at the origin
     m.apply_transform(trimesh.transformations.rotation_matrix(np.pi if up == "z" else -np.pi / 2, [1, 0, 0]))
