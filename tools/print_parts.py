@@ -8,7 +8,7 @@ bushes and axle connectors lie with their axis vertical; everything else stands 
 Studs, tubes and posts use LEGO's real diameters (see print_stl.print_triangles); --clutch MM adds to
 all three to tune the fit to a printer (default 0).
 
-Usage: python3 tools/print_parts.py [filters] [--name NAME] [--clutch MM] [--zip]
+Usage: python3 tools/print_parts.py [filters] [--name NAME] [--clutch MM] [--res MM] [--zip]
        python3 tools/print_parts.py --list          what the filters can choose from
 Filters (combine freely; a part must match all of them):
   --section deck,body      build sections (see --list)
@@ -102,6 +102,7 @@ def main():
     if not chosen:
         sys.exit("no parts match the filters")
     clutch = float(arg("--clutch") or 0)
+    res = float(arg("--res") or 0.05)      # 0.05 mm: studs and tubes within about 0.01 mm of their size
     name = arg("--name") or "-".join(slug(arg(f)) for f in ("--section", "--color", "--kind", "--parts") if arg(f)) or "alla"
     out = os.path.join(OUT, name)
     os.makedirs(out, exist_ok=True)
@@ -114,7 +115,7 @@ def main():
         lo, hi = L.bbox(part + ".dat")
         size = max(hi - lo) * print_stl.MM
         faces = 8_000 if size < 20 else 16_000 if size < 50 else 30_000
-        m = print_stl.mesh(part, 0.1, faces, up="z" if header.startswith(AXIS_UP) else "y", clutch=clutch)
+        m = print_stl.mesh(part, res, faces, up="z" if header.startswith(AXIS_UP) else "y", clutch=clutch)
         fname = f"{part}-{slug(header)}.stl"
         m.export(os.path.join(out, fname))
         colours = ", ".join(f"{c}× {partlist.COLORS[k][2].lower()}" for k, c in cols[part].most_common())
@@ -131,7 +132,7 @@ def main():
     if "--zip" in sys.argv:
         import zipfile
         with zipfile.ZipFile(out + ".zip", "w", zipfile.ZIP_DEFLATED) as z:
-            for f in sorted(os.listdir(out)):
+            for f in [r[0] for r in rows] + ["LISTA.md"]:       # only this run's files, never leftovers
                 z.write(os.path.join(out, f), os.path.join(name, f))
     bad = [r[0] for r in rows if not r[4].is_watertight]
     total = sum(os.path.getsize(os.path.join(out, r[0])) for r in rows)
